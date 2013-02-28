@@ -29,15 +29,21 @@ public abstract class ExtraMath {
 		return errorMarge;
 	}
 	
+	//TODO: check + comment
 	public static void setErrorMarge(double newMarge) throws IllegalArgumentException{
 		if(!isValidErrorMarge(newMarge)) throw new IllegalArgumentException();
 			errorMarge = newMarge;
 	}
 	
+	
+	//TODO: check + comment
 	private static boolean isValidErrorMarge(double marge){
 		boolean result = !Double.isNaN(marge);
 		result = result && marge > 0;
 		result = result && marge < 2e-10;
 		return result;
 	}
+	
+	//TODO: replace comparisons in rest of code
+	//TODO: check if other methods are needed
 }

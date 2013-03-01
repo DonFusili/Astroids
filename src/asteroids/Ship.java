@@ -3,6 +3,7 @@ package asteroids;
 import be.kuleuven.cs.som.annotate.*;
 import java.lang.Math;
 
+
 /**
  * 
  * @author Deevid De Meyer and Joost Verplancke
@@ -278,8 +279,11 @@ public class Ship implements IShip {
 		double newAngle = this.getAngle() + angle;
 		if(newAngle > 2 * Math.PI) newAngle -= 2*Math.PI;
 		if(newAngle < 0) newAngle += 2*Math.PI;
-		if(newAngle == 2*Math.PI) newAngle = 0;
+		if(ExtraMath.compare(newAngle,2*Math.PI)) newAngle = 0;
 		this.setAngle(newAngle);
+		
+		
+		
 	}
 	
 	@Basic @Immutable

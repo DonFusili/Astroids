@@ -19,11 +19,44 @@ import java.lang.Math;
 
 public class Ship implements IShip {
 	
+	/**
+	 * The basic constructor of the ship, the position, speed and direction are undefined,
+	 * only the radius is implemented.
+	 * @param radius
+	 * @throws IllegalArgumentException
+	 * 			The given radius must be valid.
+	 * 			|!isValidRadius(radius)
+	 */
 	public Ship (double radius) throws IllegalArgumentException{
 		if(!isValidRadius(radius)) throw new IllegalArgumentException();
 		this.radius = radius;
 	}
 	
+	
+	/**
+	 * 
+	 * @param XPosition
+	 * @param YPosition
+	 * @param XSpeed
+	 * @param YSpeed
+	 * @param radius
+	 * @param angle
+	 * @throws IllegalArgumentException
+	 * 			|We throw an exception if either the radius, one of the coordinates or one of the speed
+	 * 				components does not satisfy our conditions, e.g. the radius has to be a defined double
+	 * 				bigger than the lower bound of the radius (which can be accessed through the 
+	 */
+	public Ship(double XPosition, double YPosition, double XSpeed, double YSpeed, double radius, double angle) throws IllegalArgumentException{
+		if(!isValidRadius(radius)||!isValidCoordinate(XPosition) || !isValidCoordinate(YPosition)) throw new IllegalArgumentException();
+		this.ySpeed = 0;
+		this.xSpeed = XSpeed;
+		if(!isValidYSpeed(YSpeed)) throw new IllegalArgumentException();
+		this.ySpeed = YSpeed;
+		this.angle = angle;
+		this.radius = radius;
+		this.x = XPosition;
+		this.y = YPosition;
+	}
 	
 
 	/**
@@ -44,6 +77,7 @@ public class Ship implements IShip {
 	 * 
 	 * @param distance
 	 * @throws IllegalArgumentException
+	 * 		TODO: add comment on when we throw.
 	 * @Post Changes the x coordinate by the given value 
 	 * 		@Eff setXCoordinate(this.getXCoordinate() + distance)
 	 */
@@ -83,6 +117,7 @@ public class Ship implements IShip {
 	 * 
 	 * @param distance
 	 * @throws IllegalArgumentException
+	 * 			TODO: add comment on when we throw
 	 * @Post Changes the y coordinate by the given value 
 	 * 		@Eff setYCoordinate(this.getYCoordinate() + distance)
 	 */
@@ -108,10 +143,10 @@ public class Ship implements IShip {
 	 * 
 	 * @param coordinate
 	 * @return If the given coordinate lies between double.NEGATIVE_INFINITY and double.POSITIVE_INFINITY (both included), we return true, otherwise we return false
-	 * 			| result = !(coordinate > Double.MAX_VALUE || coordinate < Double.MIN_VALUE || coordinate == Double.NaN);
+	 * 			| result = !(coordinate > Double.MAX_VALUE || coordinate < Double.MIN_VALUE || Double.isNaN(coordinate));
 	 */
 	public static boolean isValidCoordinate(double coordinate) {
-		return !(coordinate > Double.MAX_VALUE || coordinate < Double.MIN_VALUE || coordinate == Double.NaN);
+		return !(coordinate > Double.MAX_VALUE || coordinate < Double.MIN_VALUE || Double.isNaN(coordinate));
 	}
 	
 	/**
@@ -154,7 +189,7 @@ public class Ship implements IShip {
 	 */
 	public boolean isValidXSpeed(double speed) {
 		double a = speed*speed + this.getYSpeed()*this.getYSpeed();
-		return a < this.getMaxSpeed();
+		return Util.fuzzyLessThanOrEqualTo(a, this.getMaxSpeed());
 	}	
 	
 	
@@ -197,7 +232,7 @@ public class Ship implements IShip {
 	 */
 	public boolean isValidYSpeed(double speed) {
 		double a = speed*speed + this.getXSpeed()*this.getXSpeed();
-		return a < this.getMaxSpeed();
+		return Util.fuzzyLessThanOrEqualTo(a, this.getMaxSpeed());
 	}		
 	
 	@Basic
@@ -224,10 +259,10 @@ public class Ship implements IShip {
 	/**
 	 * We want to be able to adapt our maximum speed, but want to check if the proposed speed is valid. Speeds must stay below the speed of light and have to be a number.
 	 * @param speed
-	 * @return !(speed == Double.NaN() || Math.Abs(speed) > LIGHTSPEED)
+	 * @return !(Double.isNaN(speed) || Math.Abs(speed) > LIGHTSPEED)
 	 */
 	public static boolean isValidMaxSpeed(double speed) {
-		return !(speed == Double.NaN || Math.abs(speed) > LIGHTSPEED);
+		return !(Double.isNaN(speed) || Util.fuzzyLessThanOrEqualTo(LIGHTSPEED, speed));
 	}
 	
 	public static final double LIGHTSPEED = 300000;
@@ -244,8 +279,9 @@ public class Ship implements IShip {
 	 * 			| new.getAngle() == angle
 	 */
 	public void setAngle(double angle) {
-		assert angle >= 0;
-		assert angle < 2 * Math.PI;
+		assert Util.fuzzyLessThanOrEqualTo(0, angle);
+		assert Util.fuzzyLessThanOrEqualTo(angle, 2*Math.PI);
+		assert !Util.fuzzyEquals(angle, 2*Math.PI);
 		this.angle = angle;
 	}
 	
@@ -274,16 +310,19 @@ public class Ship implements IShip {
 	 * 				
 	 */
 	public void relativeTurn(double angle){
-		assert angle > -1*Math.PI;
-		assert angle <= Math.PI;
+		assert Util.fuzzyLessThanOrEqualTo(-1*Math.PI, angle);
+		assert !Util.fuzzyEquals(-1*Math.PI, angle);
+		assert Util.fuzzyLessThanOrEqualTo(angle, Math.PI);
 		double newAngle = this.getAngle() + angle;
-		if(newAngle > 2 * Math.PI) newAngle -= 2*Math.PI;
+		if(Util.fuzzyEquals(newAngle,2*Math.PI) || Util.fuzzyEquals(newAngle, 0)) newAngle = 0;
+		if(Util.fuzzyLessThanOrEqualTo(2*Math.PI, newAngle)) newAngle -= 2*Math.PI;
 		if(newAngle < 0) newAngle += 2*Math.PI;
-		if(ExtraMath.compare(newAngle,2*Math.PI)) newAngle = 0;
 		this.setAngle(newAngle);
-		
-		
-		
+				
+	}
+	
+	public void turn(double angle){
+		this.relativeTurn(angle);
 	}
 	
 	@Basic @Immutable
@@ -292,7 +331,7 @@ public class Ship implements IShip {
 	}
 	
 	/**
-	 * Radii for ships are not free for the chosing
+	 * Radii for ships are not free for the choosing
 	 * @param radius
 	 * @return TODO:leuke commentaar, Deevid
 	 * 			| result = radius >= LOWERBOUND_RADIUS
@@ -303,8 +342,17 @@ public class Ship implements IShip {
 	
 	private final double radius;
 	
-	public static double LOWERBOUND_RADIUS = 10;
+	public static double LOWERBOUND_RADIUS;
+	public static double getLowerboundRadius(){
+		if(LOWERBOUND_RADIUS == 0) return 10;
+		return LOWERBOUND_RADIUS;
+	}
 	
+	/**
+	 * TODO: comment
+	 * @param newLower
+	 * @throws IllegalArgumentException
+	 */
 	public static void setLowerBoundRadius(double newLower) throws IllegalArgumentException{
 		if(!isValidLowerRadius(newLower)) throw new IllegalArgumentException();
 		LOWERBOUND_RADIUS = newLower;
@@ -313,10 +361,156 @@ public class Ship implements IShip {
 	/**
 	 * checker for the lowerbound of radii of ships
 	 * @param radius
-	 * @return lowerbound radii of ships have to be bigger than 0
+	 * @return lowerbound radii of ships have to be bigger than 0 and have to be a number.
 	 * 			| result = radius > 0
 	 */
 	public static boolean isValidLowerRadius(double radius){
+		if(Double.isNaN(radius)) return false;
 		return radius > 0;
 	}
+
+	/**
+	 * 
+	 * 
+	 * @param interval
+	 * @Pre as given in the assignement, the time interval will never be lower than zero, hence
+	 * 		we define the precondition
+	 * 		|interval >0
+	 * @Post After the ship has moved, its new coordinates will be equal to the time interval
+	 * 			multiplied by the speed in the coresponding direction.
+	 * 		| (new this).getXCoordinate() = this.getXCoordinate() + interval * this.getXSpeed()
+	 * 			&& (new this).getYCoordinate() = this.getYCoordinate() + interval * this.getYSpeed()
+	 * @throws IllegalArgumentException
+	 * 			| We throw an IllegalArgumentException when the given time interval does not fit our
+	 * 				method. This is the case when the interval is lower than zero, when it is 
+	 * 				not a number or when it exceeds the Double.MAX_VALUE
+	 */
+	public void move(double interval) throws IllegalArgumentException{
+		
+		if(!isValidTimeInterval(interval)) throw new IllegalArgumentException();
+		this.relativeXDisplacement(interval * this.getXSpeed());
+		this.relativeYDisplacement(interval * this.getYSpeed());		
+	}
+
+	/**
+	 * This method is used to check if a given time interval is valid for the use in methods of this 
+	 * class. Time intervals should be bigger than zero, be a number and cannot exceed the maximum
+	 * representable value for doubles.
+	 * @param interval
+	 * @return if the value is acceptable for use as time interval in this class, e.g. whether
+	 * 			the value is bigger than zero, is an actual number and does not exceed Double.MAX_VALUE
+	 * 		   | result = !(Double.isNaN(interval)) && !(interval > Double.MAX_VALUE) && interval > 0
+	 */
+	public static boolean isValidTimeInterval(double interval){
+		boolean check = !(Double.isNaN(interval));
+		check = check && !(interval > Double.MAX_VALUE);
+		check = check && Util.fuzzyLessThanOrEqualTo(0, interval) && !Util.fuzzyEquals(0, interval);
+		return check;
+	}
+	
+	
+
+	/**
+	 * This method is used to accelerate in the current direction of the ship. This method is implemented 
+	 * totally. We check the interval and possible speeds a few times and depending on our findings, we 
+	 * discard the changes or apply them
+	 * @param interval
+	 * @Post if the acceleration isn't valid, nothing happens
+	 * 			| if(!isValidAcceleration(acceleration)
+	 * 				then
+	 * @Post if the acceleration is valid but the new speed would exceed the maximum allowable speed,
+	 * 			the speed in both the horizontal and vertical direction get adjusted so the ship moves at the maximum allowable speed
+	 * 			| if( (this.getXSpeed() + usedAcceleration * Math.cos(this.getAngle()))² 
+	 * 					+ (this.getYSpeed() + usedAcceleration * Math.sin(this.getAngle()))² > getMaxSpeed())
+	 * 					then 
+	 * 						 @Eff setXSpeed(getMaxSpeed() * Math.cos(this.getAngle()))
+	 * 						 @Eff setYSpeed(getMaxSpeed() * Math.sin(this.getAngle()))
+	 * @Post if both the acceleration and the would-be speed are viable, we accelerate in the direction the ship is currently facing
+	 * 				| else
+	 * 					@Eff this.setXSpeed(this.getXSpeed() + usedAcceleration * Math.cos(this.getAngle()))
+	 * 					@Eff this.setYSpeed(this.getYSpeed() + usedAcceleration * Math.sin(this.getAngle()))
+	 */
+	public void thrust(double acceleration){
+		double usedAcceleration = 0;
+		//If our acceleration is not acceptable, we don't have to do a thing.
+		if(isValidAcceleration(acceleration)){ usedAcceleration = acceleration;
+		double newXSpeed = this.getXSpeed() + usedAcceleration * Math.cos(this.getAngle());
+		double newYSpeed = this.getYSpeed() + usedAcceleration * Math.sin(this.getAngle());
+		if(Util.fuzzyLessThanOrEqualTo(getMaxSpeed(), newXSpeed * newXSpeed + newYSpeed * newYSpeed)){
+			newXSpeed = getMaxSpeed() * Math.cos(this.getAngle());
+			newYSpeed = getMaxSpeed() * Math.sin(this.getAngle());
+		}
+		/**
+		 * circumvene the fact that our setter checks whether we exceed the maximum allowable speed
+		 * by setting the y speed to zero first
+		 */
+		this.setYSpeed(0);
+		this.setXSpeed(newXSpeed);
+		this.setYSpeed(newYSpeed);
+		}
+		
+	}
+	
+	
+	/**
+	 * This method checks whether a given acceleration is acceptable for use in this class. Accelerations
+	 * must be numbers representable in doubles and have to be bigger than zero.
+	 * @param acceleration
+	 * @return whether the given acceleration is a number bigger than zero
+	 * 			| result = !(Double.isNaN(acceleration)) && !(acceleration < 0)
+	 */
+	public static boolean isValidAcceleration(double acceleration){
+		return !(Double.isNaN(acceleration)) && !Util.fuzzyLessThanOrEqualTo(0, acceleration);
+	}
+	
+	
+	
+	/**
+	 * This method is used to determine the distance to another ship as defined by the assignement
+	 * @param ship
+	 * @return the distance between the two centers of the ships minus the two radii. If the method is called with the ship itself, we always return 0, otherwise
+	 * 			we calculate the distance between the two ships and substract the two radii.
+	 * 			|if(ship == this) then result = 0 else result = getDistanceBetweenCenters(ship) - this.getRadius() - ship.getRadius()
+	 * @throws NullPointerException
+	 * 			we throw a NullPointerException if the paramater ship is null.
+	 * 			| ship == null
+	 * 
+	 */
+	public double getDistanceBetween(Ship ship) throws NullPointerException{
+		if(ship == null) throw new NullPointerException();
+		if(ship == this) return 0;
+		double cDistance = this.getDistanceBetweenCenters(ship);
+		return cDistance - this.getRadius() - ship.getRadius();
+	}
+	
+	
+	
+	/**
+	 * This method is used to determine the distance between the centers of a given ship and this one. Distances between centers of ships are always positive.
+	 * @param ship
+	 * @return the geometrical distance between the two centers of the ships
+	 * 			| result = Math.Sqrt((this.getXCoordinate() - ship.getXCoordinate())² + (this.getYCoordinate() - ship.getYCoordinate())²)
+	 */
+	private double getDistanceBetweenCenters(Ship ship){
+		return Math.sqrt((this.getXCoordinate() - ship.getXCoordinate()) * (this.getXCoordinate() - ship.getXCoordinate()) 
+							+ (this.getYCoordinate() - ship.getYCoordinate()) * (this.getYCoordinate() - ship.getYCoordinate()));
+	}
+	
+	
+	
+	/**
+	 * This method is used to check whether two ships overlap. A ship always overlaps with itself
+	 * @param ship
+	 * @return whether or not the ships overlap. If the given ship is this ship, we always return true, otherwise we return true if the distance between ships is strictly
+	 * 			lower than zero (e.g. touching ships don't overlap)
+	 * @throws NullPointerException
+	 * 			We throw a nullpointerException if the parameter ship is null.
+	 * 			| ship == null
+	 */
+	public boolean overlap(Ship ship) throws NullPointerException{
+		if(ship == null) throw new NullPointerException();
+		if(ship == this) return true;
+		return Util.fuzzyLessThanOrEqualTo(this.getDistanceBetween(ship), 0);
+	}
+	
 }

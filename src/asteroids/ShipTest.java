@@ -1,13 +1,14 @@
 package asteroids;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 public class ShipTest {
 	
 	@Test
-	public void testLowerBoundRadiusInitialize(){
+	public void testLowerBoundRadiusInitialize() {
 		assertTrue(Ship.getLowerboundRadius() == 10);
 	}
 
@@ -19,7 +20,7 @@ public class ShipTest {
 	}
 	
 	@Test
-	public void testOverlapShipWithItself(){
+	public void testOverlapShipWithItself() {
 		Ship ship = new Ship(1, 1, 0, 0, 11, 1);
 		double overlap = ship.getDistanceBetween(ship);
 		boolean test = (overlap == 0);
@@ -27,7 +28,7 @@ public class ShipTest {
 	}
 	
 	@Test
-	public void testSettingCoordinates(){
+	public void testSettingCoordinates() {
 		Ship ship = new Ship(11);
 		ship.setXCoordinate(22);
 		ship.setYCoordinate(33);
@@ -37,7 +38,7 @@ public class ShipTest {
 
 	
 	@Test
-	public void testChangingLowerBoundForRadius(){
+	public void testChangingLowerBoundForRadius() {
 		Ship.setLowerBoundRadius(11);
 		boolean test = Ship.getLowerboundRadius() == 11;
 		assertTrue(test);

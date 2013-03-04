@@ -563,7 +563,11 @@ public class Ship implements IShip {
 	 */
 	public double[] getCollisionPosition(Ship ship) {
 		double time = this.getTimeToCollision(ship);
-		double[] coord = {this.getXCoordinate() + (time * this.getXSpeed()),this.getYCoordinate() + (time * this.getYSpeed())};
+		double coordX = ship.getXCoordinate() + (time * ship.getXSpeed()) - this.getXCoordinate() + (time * this.getXSpeed());
+		double coordY = ship.getYCoordinate() + (time * ship.getYSpeed()) - this.getYCoordinate() + (time * this.getYSpeed());
+		double offsetX = ship.getRadius() * (coordX/(ship.getRadius()+this.getRadius()));
+		double offsetY = ship.getRadius() * (coordY/(ship.getRadius()+this.getRadius()));
+		double[] coord = {ship.getXCoordinate() + offsetX,ship.getYCoordinate() + offsetY};
 		return coord;
 	}
 	

@@ -513,4 +513,59 @@ public class Ship implements IShip {
 		return Util.fuzzyLessThanOrEqualTo(this.getDistanceBetween(ship), 0);
 	}
 	
+	/**
+	 * Quick check if 2 ships are moving towards each other
+	 * TODO: Check if this works, comments
+	 * @param ship
+	 */
+	public boolean MovingTowardsEachOther(Ship ship) {
+		return ((ship.getXCoordinate()- this.getXCoordinate()) * (this.getXSpeed() - ship.getXSpeed())) + ((ship.getYCoordinate() - this.getYCoordinate()) * (this.getYSpeed() - ship.getYSpeed())) > 0;
+		}
+	
+	/**
+	 * Calculates the time to collision of 2 ships, or returns infinity if they will not collide
+	 * TODO: pray this works/test it
+	 * @param ship
+	 * @return
+	 * @throws NullPointerException
+	 */
+	public double getTimeToCollision(Ship ship) throws NullPointerException {
+		if(ship == null) throw new NullPointerException();
+		if(ship == this) return 0;
+		if(this.MovingTowardsEachOther(ship) == false) return Double.POSITIVE_INFINITY;
+
+		double a = 2 * ((this.getXSpeed()*this.getXSpeed()) - (2 * this.getXSpeed() * ship.getXSpeed()) + (ship.getXSpeed()*ship.getXSpeed()) 
+				 + (this.getYSpeed()*this.getYSpeed()) - (2 * this.getYSpeed() * ship.getYSpeed()) + (ship.getYSpeed()*ship.getYSpeed()));
+		
+		double b = 2 * ((-this.getXCoordinate()*this.getXSpeed()) - (this.getYCoordinate()*this.getYSpeed()) 
+				+ (this.getXSpeed() * ship.getXCoordinate()) + (this.getYSpeed() * ship.getYCoordinate()) 
+				+ (this.getXCoordinate() * ship.getXSpeed()) - (ship.getXCoordinate() * ship.getXSpeed()) 
+				+ (this.getYCoordinate() * ship.getYSpeed()) - (ship.getYCoordinate() * ship.getYSpeed()));
+
+		double c = (this.getXCoordinate()*this.getXCoordinate()) + (this.getYCoordinate()*this.getYCoordinate())
+				- (this.getRadius()*this.getRadius()) - (2 * this.getXCoordinate() * ship.getXCoordinate())
+				+ (ship.getXCoordinate()*ship.getXCoordinate()) - (2 * this.getYCoordinate() * ship.getYCoordinate())
+				+ (ship.getYCoordinate()*ship.getYCoordinate()) - (2 * this.getRadius() * ship.getRadius()) 
+				- (ship.getRadius()*ship.getRadius());
+		
+		double discriminant = (b * b) - (4 * a * c);
+		if(discriminant<0) return Double.POSITIVE_INFINITY;
+		return Math.min((b-Math.sqrt(discriminant))/a, (b+Math.sqrt(discriminant))/a);
+				
+	}
+	
+	/**
+	 * Returns the x- and y-coordinate of the predicted collision point in an array.
+	 * TODO: comments, defensief uitwerken
+	 * @param ship
+	 * @return
+	 * @throws NullPointerException
+	 */
+	public double[] getCollisionPosition(Ship ship) {
+		double time = this.getTimeToCollision(ship);
+		double[] coord = {this.getXCoordinate() + (time * this.getXSpeed()),this.getYCoordinate() + (time * this.getYSpeed())};
+		return coord;
+	}
+	
 }
+

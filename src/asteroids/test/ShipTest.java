@@ -1,9 +1,10 @@
-package asteroids;
+package asteroids.test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import asteroids.model.Ship;
 
 public class ShipTest {
 	

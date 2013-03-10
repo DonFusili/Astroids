@@ -1,5 +1,7 @@
-package asteroids;
+package asteroids.model;
 
+import asteroids.IShip;
+import asteroids.Util;
 import be.kuleuven.cs.som.annotate.*;
 import java.lang.Math;
 
@@ -18,6 +20,8 @@ import java.lang.Math;
  */
 
 public class Ship implements IShip {
+	
+	// Constructors
 	
 	/**
 	 * The basic constructor of the ship, the position, speed and direction are undefined,
@@ -59,6 +63,9 @@ public class Ship implements IShip {
 	}
 	
 
+	// Coordinates
+	
+	
 	/**
 	 * @param coordinate
 	 * @post If the given coordinate is valid, we make the new x coordinate equal to the given coordinate
@@ -76,12 +83,13 @@ public class Ship implements IShip {
 	/**
 	 * 
 	 * @param distance
-	 * @throws IllegalArgumentException
-	 * 		TODO: add comment on when we throw.
+	 * @throws IllegalArgumentException when the new coordinate (after displacement) does not qualify as a valid coordinate
+	 * 			e.g. is NaN or exceeds the bounds of the double representation.
+	 * 			| !isValidCoordinate(this.getXCoordinate() + distance)
 	 * @Post Changes the x coordinate by the given value 
 	 * 		@Eff setXCoordinate(this.getXCoordinate() + distance)
 	 */
-	public void relativeXDisplacement(double distance) throws IllegalArgumentException {
+	private void relativeXDisplacement(double distance) throws IllegalArgumentException {
 		double newX = this.getXCoordinate() + distance;
 		setXCoordinate(newX);
 	}
@@ -92,6 +100,7 @@ public class Ship implements IShip {
 	 * 			| result = this.X;
 	 */
 	@Basic
+	@Override
 	public double getXCoordinate() {
 		return this.x;
 	}
@@ -121,7 +130,7 @@ public class Ship implements IShip {
 	 * @Post Changes the y coordinate by the given value 
 	 * 		@Eff setYCoordinate(this.getYCoordinate() + distance)
 	 */
-	public void relativeYDisplacement(double distance) throws IllegalArgumentException {
+	private void relativeYDisplacement(double distance) throws IllegalArgumentException {
 		double newY = this.getYCoordinate() + distance;
 		setYCoordinate(newY);
 	}
@@ -132,6 +141,7 @@ public class Ship implements IShip {
 	 * 			| result = this.Y;
 	 */
 	@Basic
+	@Override
 	public double getYCoordinate() {
 		return this.y;
 	}
@@ -148,6 +158,10 @@ public class Ship implements IShip {
 	public static boolean isValidCoordinate(double coordinate) {
 		return !(coordinate > Double.MAX_VALUE || coordinate < Double.MIN_VALUE || Double.isNaN(coordinate));
 	}
+	
+	
+	// Velocities
+	
 	
 	/**
 	 * This method is used to set the horizontal speed appropriately. If the proposed speed is not valid, we do not change the speed.
@@ -174,6 +188,7 @@ public class Ship implements IShip {
 	}
 	
 	@Basic
+	@Override
 	public double getXSpeed() {
 		return this.xSpeed;
 	}
@@ -218,6 +233,7 @@ public class Ship implements IShip {
 	}
 	
 	@Basic
+	@Override
 	public double getYSpeed() {
 		return this.ySpeed;
 	}
@@ -240,8 +256,7 @@ public class Ship implements IShip {
 		return this.MAX_SPEED;
 	
 	}
-	
-	
+		
 	/**
 	 * 
 	 * @param speed
@@ -254,8 +269,7 @@ public class Ship implements IShip {
 		if(isValidMaxSpeed(speed)) this.MAX_SPEED = speed;
 		else MAX_SPEED = LIGHTSPEED;
 	}
-	
-	
+		
 	/**
 	 * We want to be able to adapt our maximum speed, but want to check if the proposed speed is valid. Speeds must stay below the speed of light and have to be a number.
 	 * @param speed
@@ -268,6 +282,9 @@ public class Ship implements IShip {
 	public static final double LIGHTSPEED = 300000;
 	
 	private double MAX_SPEED;
+	
+	
+	// Orientation
 	
 	
 	/**
@@ -288,11 +305,11 @@ public class Ship implements IShip {
 	private double angle;
 	
 	@Basic
+	@Override
 	public double getAngle() {
 		return this.angle;
 	}
-	
-	
+		
 	/**
 	 * This method is used to turn the ship relatively to its current position.
 	 * @param angle
@@ -309,7 +326,7 @@ public class Ship implements IShip {
 	 * 			then (new this.getAngle() == (this.getAngle() + angle)
 	 * 				
 	 */
-	public void relativeTurn(double angle){
+	private void relativeTurn(double angle){
 		assert Util.fuzzyLessThanOrEqualTo(-1*Math.PI, angle);
 		assert !Util.fuzzyEquals(-1*Math.PI, angle);
 		assert Util.fuzzyLessThanOrEqualTo(angle, Math.PI);
@@ -321,11 +338,14 @@ public class Ship implements IShip {
 				
 	}
 	
-	public void turn(double angle){
-		this.relativeTurn(angle);
-	}
+	
+	
+	
+	// Radii
+	
 	
 	@Basic @Immutable
+	@Override
 	public double getRadius(){
 		return this.radius;
 	}
@@ -342,9 +362,8 @@ public class Ship implements IShip {
 	
 	private final double radius;
 	
-	public static double LOWERBOUND_RADIUS;
+	public static double LOWERBOUND_RADIUS = 10;
 	public static double getLowerboundRadius(){
-		if(LOWERBOUND_RADIUS == 0) return 10;
 		return LOWERBOUND_RADIUS;
 	}
 	
@@ -369,6 +388,10 @@ public class Ship implements IShip {
 		return radius > 0;
 	}
 
+	
+	// Controlling the ship
+	
+	
 	/**
 	 * 
 	 * 
@@ -385,6 +408,7 @@ public class Ship implements IShip {
 	 * 				method. This is the case when the interval is lower than zero, when it is 
 	 * 				not a number or when it exceeds the Double.MAX_VALUE
 	 */
+	@Override
 	public void move(double interval) throws IllegalArgumentException{
 		
 		if(!isValidTimeInterval(interval)) throw new IllegalArgumentException();
@@ -407,13 +431,12 @@ public class Ship implements IShip {
 		check = check && Util.fuzzyLessThanOrEqualTo(0, interval) && !Util.fuzzyEquals(0, interval);
 		return check;
 	}
-	
-	
+		
 
 	/**
 	 * This method is used to accelerate in the current direction of the ship. This method is implemented 
 	 * totally. We check the interval and possible speeds a few times and depending on our findings, we 
-	 * discard the changes or apply them
+	 * discard the changes or apply them according to the given parameters.
 	 * @param interval
 	 * @Post if the acceleration isn't valid, nothing happens
 	 * 			| if(!isValidAcceleration(acceleration)
@@ -430,18 +453,19 @@ public class Ship implements IShip {
 	 * 					@Eff this.setXSpeed(this.getXSpeed() + usedAcceleration * Math.cos(this.getAngle()))
 	 * 					@Eff this.setYSpeed(this.getYSpeed() + usedAcceleration * Math.sin(this.getAngle()))
 	 */
+	@Override
 	public void thrust(double acceleration){
 		double usedAcceleration = 0;
 		//If our acceleration is not acceptable, we don't have to do a thing.
 		if(isValidAcceleration(acceleration)){ usedAcceleration = acceleration;
 		double newXSpeed = this.getXSpeed() + usedAcceleration * Math.cos(this.getAngle());
 		double newYSpeed = this.getYSpeed() + usedAcceleration * Math.sin(this.getAngle());
-		if(Util.fuzzyLessThanOrEqualTo(getMaxSpeed(), newXSpeed * newXSpeed + newYSpeed * newYSpeed)){
+		if(Util.fuzzyLessThanOrEqualTo(this.getMaxSpeed() * this.getMaxSpeed(), newXSpeed * newXSpeed + newYSpeed * newYSpeed)){
 			newXSpeed = getMaxSpeed() * Math.cos(this.getAngle());
 			newYSpeed = getMaxSpeed() * Math.sin(this.getAngle());
 		}
 		/**
-		 * circumvene the fact that our setter checks whether we exceed the maximum allowable speed
+		 * circumvent the fact that our setter checks whether we exceed the maximum allowable speed
 		 * by setting the y speed to zero first
 		 */
 		this.setYSpeed(0);
@@ -450,7 +474,6 @@ public class Ship implements IShip {
 		}
 		
 	}
-	
 	
 	/**
 	 * This method checks whether a given acceleration is acceptable for use in this class. Accelerations
@@ -463,10 +486,24 @@ public class Ship implements IShip {
 		return !(Double.isNaN(acceleration)) && !Util.fuzzyLessThanOrEqualTo(0, acceleration);
 	}
 	
+	/**
+	 * 
+	 * @param angle
+	 * @Pre The angle has to be chosen between -Pi and Pi
+	 * @Post 	The ship gets turned according to the given angle if the preconditions are met.
+	 * 			| @Eff this.relativeTurn(angle)
+	 */
+	@Override
+	public void turn(double angle){
+		this.relativeTurn(angle);
+	}
+
+	
+	//Collisions
 	
 	
 	/**
-	 * This method is used to determine the distance to another ship as defined by the assignement
+	 * This method is used to determine the distance to another ship as defined by the assignment
 	 * @param ship
 	 * @return the distance between the two centers of the ships minus the two radii. If the method is called with the ship itself, we always return 0, otherwise
 	 * 			we calculate the distance between the two ships and substract the two radii.
@@ -516,11 +553,16 @@ public class Ship implements IShip {
 	/**
 	 * Quick check if 2 ships are moving towards each other
 	 * TODO: Check if this works, comments
+	 * TODO: check order of ship/this again for vector calculations, I changed it (Joost) Also check comparison, I think it has to be less than zero
 	 * @param ship
 	 */
-	public boolean MovingTowardsEachOther(Ship ship) {
-		return ((ship.getXCoordinate()- this.getXCoordinate()) * (this.getXSpeed() - ship.getXSpeed())) + ((ship.getYCoordinate() - this.getYCoordinate()) * (this.getYSpeed() - ship.getYSpeed())) > 0;
+	private boolean MovingTowardsEachOther(Ship ship) {
+		return ((ship.getXCoordinate()- this.getXCoordinate()) * (ship.getXSpeed() - this.getXSpeed())) + ((ship.getYCoordinate() - this.getYCoordinate()) * (ship.getYSpeed() - this.getYSpeed())) < 0;
 		}
+	
+	public static boolean movingTowardsEachOther(Ship ship1, Ship ship2){
+		return ship1.MovingTowardsEachOther(ship2);
+	}
 	
 	/**
 	 * Calculates the time to collision of 2 ships, or returns infinity if they will not collide
@@ -532,7 +574,7 @@ public class Ship implements IShip {
 	public double getTimeToCollision(Ship ship) throws NullPointerException {
 		if(ship == null) throw new NullPointerException();
 		if(ship == this) return 0;
-		if(this.MovingTowardsEachOther(ship) == false) return Double.POSITIVE_INFINITY;
+		if(!this.MovingTowardsEachOther(ship)) return Double.POSITIVE_INFINITY;
 
 		double a = 2 * ((this.getXSpeed()*this.getXSpeed()) - (2 * this.getXSpeed() * ship.getXSpeed()) + (ship.getXSpeed()*ship.getXSpeed()) 
 				 + (this.getYSpeed()*this.getYSpeed()) - (2 * this.getYSpeed() * ship.getYSpeed()) + (ship.getYSpeed()*ship.getYSpeed()));

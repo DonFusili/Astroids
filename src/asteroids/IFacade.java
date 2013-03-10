@@ -1,5 +1,6 @@
 package asteroids;
 
+
 /**
  * Implement this interface to connect your code to the user interface.
  * 

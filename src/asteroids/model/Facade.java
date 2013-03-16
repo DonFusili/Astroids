@@ -6,8 +6,7 @@ import asteroids.ModelException;
 import asteroids.Util;
 
 /**
- * TODO: Write comments
- * TODO: Cast instead of overwrites for Ship interfacing?
+ * @version 1.0
  * @author Joost Verplancke
  *
  */
@@ -143,7 +142,8 @@ public class Facade implements IFacade {
 	public double getDistanceBetween(IShip ship1, IShip ship2) throws ModelException {
 		try{
 	
-		return ((Ship) ship1).getDistanceBetween((Ship) ship2);
+			return Ship.getDistanceBetween((Ship) ship1, (Ship) ship2);
+		
 		}
 		catch(Exception e){
 			throw new ModelException(e);

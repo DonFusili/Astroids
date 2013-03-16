@@ -9,11 +9,21 @@ public class Util {
     return Math.abs(x - y) <= EPSILON || Double.valueOf(x).equals(Double.valueOf(y));
   }
 
+  /**
+   * x < y
+   * @param x
+   * @param y
+   * @return
+   */
   public static boolean fuzzyLessThanOrEqualTo(double x, double y) {
     if (fuzzyEquals(x, y)) {
       return true;
     } else {
       return Double.compare(x, y) < 0;
     }
+  }
+  
+  public static double getEpsilon(){
+	  return EPSILON;
   }
 }

@@ -14,14 +14,17 @@ import java.lang.Math;
  * 			| this.getRadius() <= LOWERBOUND_RADIUS
  * @Invar The LOWERBOUND_RADIUS will always be bigger than zero
  * 			| LOWERBOUND_RADIUS > 0
- * TODO: Andere Invars?
- * TODO: User Library? 			
+ * @Invar The coordinates will always be valid
+ * 			| isValidCoordinate(this.getXCoordinate()) && isValidCoordinate(this.getYCoordinate())
+ * @Invar The total speed will always be lower than or equal to the max allowable speed at that moment
+ * 			| this.getSpeed() < this.getMaxSpeed()
+ * TODO: Other Invars?		
  *
  */
 
 public class Ship implements IShip {
 	
-	// Constructors
+	// Constructors, all implemented defensively
 	
 	/**
 	 * The basic constructor of the ship, the position, speed and direction are undefined,
@@ -32,8 +35,13 @@ public class Ship implements IShip {
 	 * 			|!isValidRadius(radius)
 	 */
 	public Ship (double radius) throws IllegalArgumentException{
-		if(!isValidRadius(radius)) throw new IllegalArgumentException();
+		if(!isValidRadius(radius)) throw new IllegalArgumentException();		
+		this.setXCoordinate(0);
+		this.setYCoordinate(0);
+		this.setYSpeed(0);
+		this.setXSpeed(0);
 		this.radius = radius;
+		this.setAngle(0);
 	}
 	
 	
@@ -51,19 +59,17 @@ public class Ship implements IShip {
 	 * 				bigger than the lower bound of the radius (which can be accessed through the 
 	 */
 	public Ship(double XPosition, double YPosition, double XSpeed, double YSpeed, double radius, double angle) throws IllegalArgumentException{
-		if(!isValidRadius(radius)||!isValidCoordinate(XPosition) || !isValidCoordinate(YPosition)) throw new IllegalArgumentException();
-		this.ySpeed = 0;
-		this.xSpeed = XSpeed;
-		if(!isValidYSpeed(YSpeed)) throw new IllegalArgumentException();
-		this.ySpeed = YSpeed;
-		this.angle = angle;
+		if(!isValidRadius(radius)) throw new IllegalArgumentException();		
+		this.setXCoordinate(XPosition);
+		this.setYCoordinate(YPosition);
+		this.setYSpeed(YSpeed);
+		this.setXSpeed(XSpeed);
 		this.radius = radius;
-		this.x = XPosition;
-		this.y = YPosition;
+		this.setAngle(angle);
 	}
 	
 
-	// Coordinates
+	// Coordinates, all implemented defensively
 	
 	
 	/**
@@ -125,8 +131,9 @@ public class Ship implements IShip {
 	/**
 	 * 
 	 * @param distance
-	 * @throws IllegalArgumentException
-	 * 			TODO: add comment on when we throw
+	 * @throws IllegalArgumentException when the new coordinate (after displacement) does not qualify as a valid coordinate
+	 * 			e.g. is NaN or exceeds the bounds of the double representation.
+	 * 			| !isValidCoordinate(this.getYCoordinate() + distance)
 	 * @Post Changes the y coordinate by the given value 
 	 * 		@Eff setYCoordinate(this.getYCoordinate() + distance)
 	 */
@@ -153,14 +160,14 @@ public class Ship implements IShip {
 	 * 
 	 * @param coordinate
 	 * @return If the given coordinate lies between double.NEGATIVE_INFINITY and double.POSITIVE_INFINITY (both included), we return true, otherwise we return false
-	 * 			| result = !(coordinate > Double.MAX_VALUE || coordinate < Double.MIN_VALUE || Double.isNaN(coordinate));
+	 * 			| result = !(Math.abs(coordinate) > Double.MAX_VALUE || Double.isNaN(coordinate));
 	 */
 	public static boolean isValidCoordinate(double coordinate) {
-		return !(coordinate > Double.MAX_VALUE || coordinate < Double.MIN_VALUE || Double.isNaN(coordinate));
+		return !(Math.abs(coordinate) > Double.MAX_VALUE || Double.isNaN(coordinate));
 	}
 	
 	
-	// Velocities
+	// Velocities, all implemented totally
 	
 	
 	/**
@@ -176,17 +183,6 @@ public class Ship implements IShip {
 	if(isValidXSpeed(speed)) this.xSpeed = speed;
 	}
 	
-	/**
-	 * This method is used to change the horizontal speed
-	 * @param difference
-	 * @post Changes the horizontal speed by a given value 
-	 * 		@Eff setXSpeed(this.getXSpeed() + difference)
-	 */
-	public void changeXSpeed(double difference) {
-		double newSpeed = this.getXSpeed() + difference;
-		setXSpeed(newSpeed);
-	}
-	
 	@Basic
 	@Override
 	public double getXSpeed() {
@@ -194,20 +190,18 @@ public class Ship implements IShip {
 	}
 	
 	private double xSpeed;
-	
-	
+		
 	/**
 	 * Before we adjust the horizontal speed (that is: the speed projected onto the x coordinate), we check if the proposed new speed in that direction is valid
 	 * to do this, we check if the total speed would exceed the maximum speed of this ship.
 	 * @param speed
-	 * @return 
+	 * @return whether the total speed we would have if we change the horizontal speed to the given speed would still be valid (by which we mean exceed the max speed)
+	 * 			| result = Math.sqrt(speed*speed + this.getYSpeed()*this.getYSpeed()) <= this.getMaxSpeed()
 	 */
-	public boolean isValidXSpeed(double speed) {
-		double a = speed*speed + this.getYSpeed()*this.getYSpeed();
-		return Util.fuzzyLessThanOrEqualTo(a, this.getMaxSpeed());
+	private boolean isValidXSpeed(double speed) {
+		return Math.sqrt(speed*speed + this.getYSpeed()*this.getYSpeed()) <= this.getMaxSpeed();
 	}	
-	
-	
+		
 	/**
 	 * This method is used to set the vertical speed appropriately. If the proposed speed is not valid, we do not change the speed.
 	 * @param speed
@@ -219,17 +213,6 @@ public class Ship implements IShip {
 	 */
 	public void setYSpeed(double speed) {
 		if(isValidYSpeed(speed)) this.ySpeed = speed;
-	}
-	
-	/**
-	 * This method is used to change the vertical speed
-	 * @post Changes the vertical speed by a given value
-	 * 		@Eff setYSpeed(this.getYSpeed() + difference)
-	 * @param difference
-	 */
-	public void changeYSpeed(double difference) {
-		double newSpeed = this.getYSpeed() + difference;
-		setYSpeed(newSpeed);
 	}
 	
 	@Basic
@@ -244,11 +227,12 @@ public class Ship implements IShip {
 	 * Before we adjust the vertical speed (that is: the speed projected onto the y coordinate), we check if the proposed new speed in that direction is valid
 	 * to do this, we check if the total speed would exceed the maximum speed of this ship.
 	 * @param speed
-	 * @return 
+	 * @return whether the total speed we would have if we change the vertical speed to the given speed would still be valid (by which we mean exceed the max speed)
+	 * 			| result = Math.sqrt(speed*speed + this.getXSpeed()*this.getXSpeed()) <= this.getMaxSpeed()
 	 */
-	public boolean isValidYSpeed(double speed) {
-		double a = speed*speed + this.getXSpeed()*this.getXSpeed();
-		return Util.fuzzyLessThanOrEqualTo(a, this.getMaxSpeed());
+	private boolean isValidYSpeed(double speed) {
+		double a = Math.sqrt(speed*speed + this.getXSpeed()*this.getXSpeed());
+		return a <= this.getMaxSpeed();
 	}		
 	
 	@Basic
@@ -256,35 +240,63 @@ public class Ship implements IShip {
 		return this.MAX_SPEED;
 	
 	}
+	
+	
+	/**
+	 * returns the total speed of the ship.
+	 * @return sqrt(this.getXSpeed()**2 + this.getYSpeed()**2)
+	 */
+	public double getSpeed(){
+		return Math.sqrt(this.getXSpeed() * this.getXSpeed() + this.getYSpeed() + this.getYSpeed());
+	}
 		
 	/**
 	 * 
 	 * @param speed
 	 * @post 	If the proposed speed for MAX_SPEED is valid, we adjust the maximum speed to that value, otherwise we fall back to the speed of light.
-	 * 			|if(isValidMasSpeed(speed))
+	 * 			|if(isValidMaxSpeed(speed))
 	 * 				then (new this).getMaxSpeed() == speed
 	 * 			 else then (new this).getMaxSpeed() == LIGHTSPEED
+	 * @post	If the change in max speed would mean that our current speed exceeds the max speed, we fall back to max speed
+	 * 			|if(this.getSpeed >= (new this).getMaxSpeed())
+	 * 				then @Eff changeToMaxSpeed()
 	 */
 	public void setMaxSpeed(double speed) {
 		if(isValidMaxSpeed(speed)) this.MAX_SPEED = speed;
 		else MAX_SPEED = LIGHTSPEED;
+		if(Util.fuzzyLessThanOrEqualTo(this.getSpeed(), this.getMaxSpeed())) this.changeToMaxSpeed();
+	}
+	
+	/**This method is used to change the total speed of the ship to the maximum speed but retain the same direction of movement.
+	 * @post after this method has resolved our ship will be moving in the same direction it was earlier but at max speed
+	 * 			| (new this).getSpeed() == this.getMaxSpeed() && (new this).getXSpeed()/(new this).getYSpeed() == this.getXSpeed()/this.getYSpeed()
+	 * TODO: this is dirty programming due to problems with the checkers for speeds.
+	 */
+	public void changeToMaxSpeed(){
+		if(this.getSpeed() == 0) return;
+		double fracture = this.getSpeed() / this.getMaxSpeed();
+		double oldYS = this.getYSpeed();
+		this.setYSpeed(0);
+		this.setXSpeed(this.getXSpeed() / fracture);
+		this.ySpeed = oldYS / fracture;
 	}
 		
 	/**
-	 * We want to be able to adapt our maximum speed, but want to check if the proposed speed is valid. Speeds must stay below the speed of light and have to be a number.
+	 * We want to be able to adapt our maximum speed, but want to check if the proposed speed is valid. Max speeds must stay below the speed of light and have to be a number.
+	 * Max speeds are always bigger than 0.
 	 * @param speed
-	 * @return !(Double.isNaN(speed) || Math.Abs(speed) > LIGHTSPEED)
+	 * @return !(Double.isNaN(speed) || speed > LIGHTSPEED || speed < 0)
 	 */
 	public static boolean isValidMaxSpeed(double speed) {
-		return !(Double.isNaN(speed) || Util.fuzzyLessThanOrEqualTo(LIGHTSPEED, speed));
+		return !(Double.isNaN(speed) || Util.fuzzyLessThanOrEqualTo(LIGHTSPEED, speed) || Util.fuzzyLessThanOrEqualTo(speed, 0));
 	}
 	
 	public static final double LIGHTSPEED = 300000;
 	
-	private double MAX_SPEED;
+	private double MAX_SPEED = LIGHTSPEED;
 	
 	
-	// Orientation
+	// Orientation, all implemented nominally (turning is included in the controlling paragraph and is also implemented nominally)
 	
 	
 	/**
@@ -309,36 +321,6 @@ public class Ship implements IShip {
 	public double getAngle() {
 		return this.angle;
 	}
-		
-	/**
-	 * This method is used to turn the ship relatively to its current position.
-	 * @param angle
-	 * @Pre The angle has to be between -Pi and Pi
-	 * 		| -Math.PI < angle =< Math.PI
-	 * @post The new angle gets normalized to a value between 0 and 2*Pi and then adjusted
-	 * 		| if((this.getAngle() + angle) < 0
-	 * 			then (new this).getAngle() == (this.getAngle() + angle + 2 * Math.PI)
-	 * 		|if((this.getAngle() + angle == 2*Math.PI) || this.getAngle() + angle == 0)
-	 * 				then (new this).getAngle() == 0
-	 * 		|if((this.getAngle() + angle > 2*Math.PI))
-	 * 			then (new this).getAngle() == (this.getAngle() + angle - 2*Math.PI)
-	 * 		|if((this.getAngle() + angle) < 2*Math.Pi && (this.getAngle() + angle) > 0)
-	 * 			then (new this.getAngle() == (this.getAngle() + angle)
-	 * 				
-	 */
-	private void relativeTurn(double angle){
-		assert Util.fuzzyLessThanOrEqualTo(-1*Math.PI, angle);
-		assert !Util.fuzzyEquals(-1*Math.PI, angle);
-		assert Util.fuzzyLessThanOrEqualTo(angle, Math.PI);
-		double newAngle = this.getAngle() + angle;
-		if(Util.fuzzyEquals(newAngle,2*Math.PI) || Util.fuzzyEquals(newAngle, 0)) newAngle = 0;
-		if(Util.fuzzyLessThanOrEqualTo(2*Math.PI, newAngle)) newAngle -= 2*Math.PI;
-		if(newAngle < 0) newAngle += 2*Math.PI;
-		this.setAngle(newAngle);
-				
-	}
-	
-	
 	
 	
 	// Radii
@@ -353,24 +335,31 @@ public class Ship implements IShip {
 	/**
 	 * Radii for ships are not free for the choosing
 	 * @param radius
-	 * @return TODO:leuke commentaar, Deevid
-	 * 			| result = radius >= LOWERBOUND_RADIUS
+	 * @return 	whether the radius is valid, by which we mean we check if the radius is a number, isn't null and is bigger than the set static lowerbound radius.
+	 * 			| result = radius != null && radius != NaN && radius >= LOWERBOUND_RADIUS
 	 */
 	public static boolean isValidRadius(double radius){
-		return radius >= LOWERBOUND_RADIUS;
+		return (Double)radius != null && (Double)radius != Double.NaN && radius >= getLowerboundRadius();
 	}
 	
 	private final double radius;
 	
-	public static double LOWERBOUND_RADIUS = 10;
+	private static final double STANDARD_LOWERBOUND = 10;
+	private static double LOWERBOUND_RADIUS = STANDARD_LOWERBOUND;
 	public static double getLowerboundRadius(){
 		return LOWERBOUND_RADIUS;
 	}
 	
 	/**
-	 * TODO: comment
+	 * This method is used to make sure all ships created from now on have a radius bigger than the given argument. If the proposed lowerbound 
+	 * for the radii isn't acceptable, we throw an IllegalArgumentException, otherwise we adjust the lowerbound for radii (acceptable through the
+	 * static getLowerBoundRadius method).
 	 * @param newLower
-	 * @throws IllegalArgumentException
+	 * @post	If the proposed new lowerbound for radii is acceptable, we adjust the static variable
+	 * 			| if(isValidLowerRadius(newLower))
+	 * 				then (post Ship).getLowerBoundRadius() == newLower
+	 * @throws IllegalArgumentException if the proposed lowerbound is not acceptable.
+	 * 			| !isValidLowerRadius(newLower)
 	 */
 	public static void setLowerBoundRadius(double newLower) throws IllegalArgumentException{
 		if(!isValidLowerRadius(newLower)) throw new IllegalArgumentException();
@@ -388,29 +377,33 @@ public class Ship implements IShip {
 		return radius > 0;
 	}
 
+	/**
+	 * return the lowerbound for radii to the value it initially had
+	 * @post (new)getLowerboundRadius = STANDARD_LOWERBOUND;
+	 */
+	public static void standardLowerboundRadius(){
+		setLowerBoundRadius(STANDARD_LOWERBOUND);
+	}
 	
 	// Controlling the ship
 	
 	
 	/**
-	 * 
-	 * 
+	 * This is the defensively implemented method to move a ship at its current speed, given a certain time interval during which the ship moves.
+	 * This method is implemented defensively
 	 * @param interval
-	 * @Pre as given in the assignement, the time interval will never be lower than zero, hence
-	 * 		we define the precondition
-	 * 		|interval >0
 	 * @Post After the ship has moved, its new coordinates will be equal to the time interval
-	 * 			multiplied by the speed in the coresponding direction.
+	 * 			multiplied by the speed in the corresponding direction.
 	 * 		| (new this).getXCoordinate() = this.getXCoordinate() + interval * this.getXSpeed()
 	 * 			&& (new this).getYCoordinate() = this.getYCoordinate() + interval * this.getYSpeed()
 	 * @throws IllegalArgumentException
 	 * 			| We throw an IllegalArgumentException when the given time interval does not fit our
 	 * 				method. This is the case when the interval is lower than zero, when it is 
 	 * 				not a number or when it exceeds the Double.MAX_VALUE
+	 * 			|!(isValidTimeInterval(interval)
 	 */
 	@Override
 	public void move(double interval) throws IllegalArgumentException{
-		
 		if(!isValidTimeInterval(interval)) throw new IllegalArgumentException();
 		this.relativeXDisplacement(interval * this.getXSpeed());
 		this.relativeYDisplacement(interval * this.getYSpeed());		
@@ -434,9 +427,10 @@ public class Ship implements IShip {
 		
 
 	/**
-	 * This method is used to accelerate in the current direction of the ship. This method is implemented 
+	 * This method is used to accelerate in the current direction the ship is facing. This method is implemented 
 	 * totally. We check the interval and possible speeds a few times and depending on our findings, we 
 	 * discard the changes or apply them according to the given parameters.
+	 * This method is implemented totally.
 	 * @param interval
 	 * @Post if the acceleration isn't valid, nothing happens
 	 * 			| if(!isValidAcceleration(acceleration)
@@ -455,11 +449,11 @@ public class Ship implements IShip {
 	 */
 	@Override
 	public void thrust(double acceleration){
-		double usedAcceleration = 0;
 		//If our acceleration is not acceptable, we don't have to do a thing.
-		if(isValidAcceleration(acceleration)){ usedAcceleration = acceleration;
-		double newXSpeed = this.getXSpeed() + usedAcceleration * Math.cos(this.getAngle());
-		double newYSpeed = this.getYSpeed() + usedAcceleration * Math.sin(this.getAngle());
+		if(!isValidAcceleration(acceleration)) return;
+		double newXSpeed = this.getXSpeed() + acceleration * Math.cos(this.getAngle());
+		double newYSpeed = this.getYSpeed() + acceleration * Math.sin(this.getAngle());
+		// If the acceleration would make us move faster than the max allowable speed, we switch to the max speed in the direction the ship is facing at the moment.
 		if(Util.fuzzyLessThanOrEqualTo(this.getMaxSpeed() * this.getMaxSpeed(), newXSpeed * newXSpeed + newYSpeed * newYSpeed)){
 			newXSpeed = getMaxSpeed() * Math.cos(this.getAngle());
 			newYSpeed = getMaxSpeed() * Math.sin(this.getAngle());
@@ -471,7 +465,6 @@ public class Ship implements IShip {
 		this.setYSpeed(0);
 		this.setXSpeed(newXSpeed);
 		this.setYSpeed(newYSpeed);
-		}
 		
 	}
 	
@@ -483,23 +476,42 @@ public class Ship implements IShip {
 	 * 			| result = !(Double.isNaN(acceleration)) && !(acceleration < 0)
 	 */
 	public static boolean isValidAcceleration(double acceleration){
-		return !(Double.isNaN(acceleration)) && !Util.fuzzyLessThanOrEqualTo(0, acceleration);
+		return !(Double.isNaN(acceleration)) && !(acceleration > Double.MAX_VALUE) &&!Util.fuzzyLessThanOrEqualTo(acceleration, 0);
 	}
 	
 	/**
-	 * 
+	 * This method is used to turn the ship relatively to its current position.
+	 * This method is implemented nominally
 	 * @param angle
-	 * @Pre The angle has to be chosen between -Pi and Pi
-	 * @Post 	The ship gets turned according to the given angle if the preconditions are met.
-	 * 			| @Eff this.relativeTurn(angle)
+	 * @Pre The angle has to be between -Pi and Pi
+	 * 		| -Math.PI < angle =< Math.PI
+	 * @post The new angle gets normalized to a value between 0 and 2*Pi and then adjusted
+	 * 		| if((this.getAngle() + angle) < 0
+	 * 			then (new this).getAngle() == (this.getAngle() + angle + 2 * Math.PI)
+	 * 		|if((this.getAngle() + angle == 2*Math.PI) || this.getAngle() + angle == 0)
+	 * 				then (new this).getAngle() == 0
+	 * 		|if((this.getAngle() + angle > 2*Math.PI))
+	 * 			then (new this).getAngle() == (this.getAngle() + angle - 2*Math.PI)
+	 * 		|if((this.getAngle() + angle) < 2*Math.Pi && (this.getAngle() + angle) > 0)
+	 * 			then (new this.getAngle() == (this.getAngle() + angle)
+	 * 				
 	 */
 	@Override
 	public void turn(double angle){
-		this.relativeTurn(angle);
+		assert Util.fuzzyLessThanOrEqualTo(-1*Math.PI, angle);
+		assert !Util.fuzzyEquals(-1*Math.PI, angle);
+		assert Util.fuzzyLessThanOrEqualTo(angle, Math.PI);
+		double newAngle = this.getAngle() + angle;
+		if(Util.fuzzyEquals(newAngle,2*Math.PI) || Util.fuzzyEquals(newAngle, 0)) newAngle = 0;
+		// Due to the preconditions, we only have to adjust the angle by 2*Pi at the most.
+		if(Util.fuzzyLessThanOrEqualTo(2*Math.PI, newAngle)) newAngle -= 2*Math.PI;
+		if(newAngle < 0) newAngle += 2*Math.PI;
+		this.setAngle(newAngle);
+				
 	}
-
 	
-	//Collisions
+	
+	//Collisions and Distances
 	
 	
 	/**
@@ -521,17 +533,35 @@ public class Ship implements IShip {
 	}
 	
 	
+	/**
+	 * This method is used as the static interface to determine the distance between two ships.
+	 * @param ship1
+	 * @param ship2
+	 * @return the distance using the non-static method getDistanceBetween(Ship ship) against one of the given ships
+	 * 			| @Eff result = ship1.getDistanceBetween(ship2)
+	 * @throws NullPointerException if the ship we want to call the non-static method against is null
+	 * 			| ship1 == null
+	 */
+	public static double getDistanceBetween(Ship ship1, Ship ship2) throws NullPointerException{
+		if(ship1 == null) throw new NullPointerException();
+		return ship1.getDistanceBetween(ship2);
+	}
+	
 	
 	/**
 	 * This method is used to determine the distance between the centers of a given ship and this one. Distances between centers of ships are always positive.
 	 * @param ship
 	 * @return the geometrical distance between the two centers of the ships
 	 * 			| result = Math.Sqrt((this.getXCoordinate() - ship.getXCoordinate())² + (this.getYCoordinate() - ship.getYCoordinate())²)
+	 * @throws NullPointerException if the given ship is null
+	 * 			| ship == null
 	 */
-	private double getDistanceBetweenCenters(Ship ship){
+	private double getDistanceBetweenCenters(Ship ship) throws NullPointerException{
+		if(ship == null) throw new NullPointerException();
 		return Math.sqrt((this.getXCoordinate() - ship.getXCoordinate()) * (this.getXCoordinate() - ship.getXCoordinate()) 
 							+ (this.getYCoordinate() - ship.getYCoordinate()) * (this.getYCoordinate() - ship.getYCoordinate()));
 	}
+	
 	
 	
 	
@@ -551,66 +581,153 @@ public class Ship implements IShip {
 	}
 	
 	/**
-	 * Quick check if 2 ships are moving towards each other
-	 * TODO: Check if this works, comments
-	 * TODO: check order of ship/this again for vector calculations, I changed it (Joost) Also check comparison, I think it has to be less than zero
+	 * Quick check if 2 ships are moving towards each other using basic vector calculus
 	 * @param ship
+	 * @return we multiply the delta_speed and delta_coordinate vectors and check if the result is smaller than 0, if it is, the ships are
+	 * 			moving towards each other, if it isn't, they aren't.
+	 * 			| result = ((ship.getXCoordinate()- this.getXCoordinate()) * (ship.getXSpeed() - this.getXSpeed())) + 
+				((ship.getYCoordinate() - this.getYCoordinate()) * (ship.getYSpeed() - this.getYSpeed())) < 0
 	 */
 	private boolean MovingTowardsEachOther(Ship ship) {
-		return ((ship.getXCoordinate()- this.getXCoordinate()) * (ship.getXSpeed() - this.getXSpeed())) + ((ship.getYCoordinate() - this.getYCoordinate()) * (ship.getYSpeed() - this.getYSpeed())) < 0;
+		return ((ship.getXCoordinate()- this.getXCoordinate()) * (ship.getXSpeed() - this.getXSpeed())) + 
+				((ship.getYCoordinate() - this.getYCoordinate()) * (ship.getYSpeed() - this.getYSpeed())) < 0;
 		}
 	
-	public static boolean movingTowardsEachOther(Ship ship1, Ship ship2){
+	
+	/**
+	 * This method is used as the interfacing method for the private method MovingTowardsEachOther
+	 * @param ship1
+	 * @param ship2
+	 * @return We return 
+	 * @throws
+	 */
+	public static boolean movingTowardsEachOther(Ship ship1, Ship ship2) throws NullPointerException{
+		if(ship1 == null) throw new NullPointerException();
 		return ship1.MovingTowardsEachOther(ship2);
 	}
 	
 	/**
-	 * Calculates the time to collision of 2 ships, or returns infinity if they will not collide
-	 * TODO: pray this works/test it
+	 * Calculates the time to collision of 2 ships, or returns infinity if they will not collide.
+	 * TODO: works, praying unnecesary now
 	 * @param ship
-	 * @return
+	 * @return The point where the two ships touch each other when (and if) they collide
+	 * 			| ...
 	 * @throws NullPointerException
 	 */
 	public double getTimeToCollision(Ship ship) throws NullPointerException {
 		if(ship == null) throw new NullPointerException();
 		if(ship == this) return 0;
 		if(!this.MovingTowardsEachOther(ship)) return Double.POSITIVE_INFINITY;
-
-		double a = 2 * ((this.getXSpeed()*this.getXSpeed()) - (2 * this.getXSpeed() * ship.getXSpeed()) + (ship.getXSpeed()*ship.getXSpeed()) 
-				 + (this.getYSpeed()*this.getYSpeed()) - (2 * this.getYSpeed() * ship.getYSpeed()) + (ship.getYSpeed()*ship.getYSpeed()));
-		
-		double b = 2 * ((-this.getXCoordinate()*this.getXSpeed()) - (this.getYCoordinate()*this.getYSpeed()) 
-				+ (this.getXSpeed() * ship.getXCoordinate()) + (this.getYSpeed() * ship.getYCoordinate()) 
-				+ (this.getXCoordinate() * ship.getXSpeed()) - (ship.getXCoordinate() * ship.getXSpeed()) 
-				+ (this.getYCoordinate() * ship.getYSpeed()) - (ship.getYCoordinate() * ship.getYSpeed()));
-
-		double c = (this.getXCoordinate()*this.getXCoordinate()) + (this.getYCoordinate()*this.getYCoordinate())
-				- (this.getRadius()*this.getRadius()) - (2 * this.getXCoordinate() * ship.getXCoordinate())
-				+ (ship.getXCoordinate()*ship.getXCoordinate()) - (2 * this.getYCoordinate() * ship.getYCoordinate())
-				+ (ship.getYCoordinate()*ship.getYCoordinate()) - (2 * this.getRadius() * ship.getRadius()) 
-				- (ship.getRadius()*ship.getRadius());
-		
-		double discriminant = (b * b) - (4 * a * c);
-		if(discriminant<0) return Double.POSITIVE_INFINITY;
-		return Math.min((b-Math.sqrt(discriminant))/a, (b+Math.sqrt(discriminant))/a);
-				
+		double txs = this.getXSpeed();
+		double sxs = ship.getXSpeed();
+		double txc = this.getXCoordinate();
+		double sxc = ship.getXCoordinate();
+		double tys = this.getYSpeed();
+		double sys = ship.getYSpeed();
+		double tyc = this.getYCoordinate();
+		double syc = ship.getYCoordinate();
+		double sor = this.getRadius() + ship.getRadius();
+		// Now we just calculate d according to the assignment
+		double d = (
+				(
+				// (DELTA_v * DELTA_r)
+				((txs - sxs) * (txc - sxc) + (tys - sys) * (tyc - syc))
+				// ²
+				* ((txs - sxs) * (txc - sxc) + (tys - sys) * (tyc - syc))
+				)
+				-
+				( (
+				// DELTA_v * DELTA_v
+				(txs - sxs) * (txs - sxs) + (tys - sys) * (tys - sys)
+				)
+				*
+				( (
+				// DELTA_r * DELTA_r
+				(txc - sxc) * (txc - sxc) + (tyc - syc) * (tyc - syc)
+				)
+				-
+				// SIGMA ²
+				(sor * sor) 
+				) 
+				) );
+		if(d < 0) return Double.POSITIVE_INFINITY;
+		d = Math.sqrt(d);
+		double result = -1 * (
+				(
+				(
+				//DELTA_v * DELTA_r
+				(txs - sxs) * (txc - sxc) + (tys - sys) * (tyc - syc)
+				)
+				+
+				//SQRT(d)
+				d
+				)
+				/
+				(
+				//DELTA_v * DELTA_v
+				(txs - sxs) * (txs - sxs) + (tys - sys) * (tys - sys)
+				)
+				);
+		return result;
 	}
 	
+
 	/**
-	 * Returns the x- and y-coordinate of the predicted collision point in an array.
-	 * TODO: comments, defensief uitwerken
+	 * 
 	 * @param ship
 	 * @return
 	 * @throws NullPointerException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalStateException
 	 */
-	public double[] getCollisionPosition(Ship ship) {
+	public double[] getCollisionPosition(Ship ship) throws NullPointerException, IllegalArgumentException, IllegalStateException {
+		if(ship == null) throw new NullPointerException();
+		if(ship == this) throw new IllegalArgumentException();
 		double time = this.getTimeToCollision(ship);
-		double coordX = ship.getXCoordinate() + (time * ship.getXSpeed()) - this.getXCoordinate() + (time * this.getXSpeed());
-		double coordY = ship.getYCoordinate() + (time * ship.getYSpeed()) - this.getYCoordinate() + (time * this.getYSpeed());
-		double offsetX = ship.getRadius() * (coordX/(ship.getRadius()+this.getRadius()));
-		double offsetY = ship.getRadius() * (coordY/(ship.getRadius()+this.getRadius()));
-		double[] coord = {ship.getXCoordinate() + offsetX,ship.getYCoordinate() + offsetY};
-		return coord;
+		if(time == Double.POSITIVE_INFINITY) throw new IllegalStateException();
+		double[] result = new double[2];
+		double txc = this.getXCoordinate() + time * this.getXSpeed();
+		double sxc = ship.getXCoordinate() + time * ship.getXSpeed();
+		double tyc = this.getYCoordinate() + time * this.getYSpeed();
+		double syc = ship.getYCoordinate() + time * ship.getYSpeed();
+		double tr = this.getRadius();
+		double sr = ship.getRadius();
+//		double coordX = ship.getXCoordinate() + (time * ship.getXSpeed()) - this.getXCoordinate() + (time * this.getXSpeed());
+//		double coordY = ship.getYCoordinate() + (time * ship.getYSpeed()) - this.getYCoordinate() + (time * this.getYSpeed());
+//		double offsetX = ship.getRadius() * (coordX/(ship.getRadius()+this.getRadius()));
+//		double offsetY = ship.getRadius() * (coordY/(ship.getRadius()+this.getRadius()));
+//		double[] coord = {ship.getXCoordinate() + offsetX,ship.getYCoordinate() + offsetY};
+//		return coord;
+		if(txc == sxc){
+			result[0] = txc;
+			if(tyc > syc){
+				result[1] = tyc - tr;
+			}
+			else {
+				result[1] = tyc + tr;
+			}
+		}
+		else{
+			double thales = tr/(tr + sr);
+			// We use thales' theorem to project unto the x and y axis.
+				result[0] = txc + thales * (sxc - txc);
+				result[1] = tyc + thales * (syc - tyc);			
+		}
+		return result;
+	}
+	
+	/**
+	 * This is the static interfacing method to get the collision position of two ships with the getCollisionPosition method (which is non-static)
+	 * @param ship1
+	 * @param ship2
+	 * @return We call the public non-static method getCollisionPoint against one of the ships if that one isn't null.
+	 * 			| result = ship1.getCollisionPosition(ship2)
+	 * @throws NullPointerException if the ship we want to call the non-static method against is null
+	 * 			| ship1 == null
+	 */
+	public static double[] getCollisionPoint(Ship ship1, Ship ship2) throws NullPointerException{
+		if(ship1 == null) throw new NullPointerException();
+		return ship1.getCollisionPosition(ship2);
 	}
 	
 }

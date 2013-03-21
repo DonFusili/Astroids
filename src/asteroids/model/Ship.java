@@ -433,7 +433,7 @@ public class Ship implements IShip {
 	 * This method is implemented totally.
 	 * @param interval
 	 * @Post if the acceleration isn't valid, nothing happens
-	 * 			| if(!isValidAcceleration(acceleration)
+	 * 			| if(!isValidAcceleration(acceleration))
 	 * 				then
 	 * @Post if the acceleration is valid but the new speed would exceed the maximum allowable speed,
 	 * 			the speed in both the horizontal and vertical direction get adjusted so the ship moves at the maximum allowable speed

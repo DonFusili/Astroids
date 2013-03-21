@@ -3,136 +3,149 @@ package asteroids;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.HashSet;
-import java.util.Set;
+import java.awt.Rectangle;
 
 import javax.swing.JFrame;
-import javax.swing.Timer;
-
 
 @SuppressWarnings("serial")
-public class Asteroids extends JFrame {
-  private Timer timer;
-  private long lastMove;
-  private boolean thrust;
-  private double angle;
+public class Asteroids<World, Ship, Asteroid, Bullet> extends JFrame {
 
-  private static final double THRUST_PER_SECOND = 150;
+  private AsteroidsMenu<World, Ship, Asteroid, Bullet> menu;
+  private WorldView<World, Ship, Asteroid, Bullet> view;
+  private IFacade<World, Ship, Asteroid, Bullet> facade;
+  private int width;
+  private int height;
+  private Sound sound;
 
-  public Asteroids(final IFacade facade, boolean undecorated) {
+  public Asteroids(IFacade<World, Ship, Asteroid, Bullet> facade, int width, int height, boolean undecorated, Sound sound) {
     super("Asteroids");
-    final Set<IShip> ships = initModel(facade);
-    final AsteroidsView view = new AsteroidsView(ships, facade);
-    if (!undecorated) {
-      view.setPreferredSize(new Dimension(1024, 768));
-    }
-    timer = new Timer(1000 / 30, new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        long now = System.currentTimeMillis();
-        long millisSinceLastMove = now - lastMove;
-        lastMove = now;
-        double dt = millisSinceLastMove / 1000.;
-        if (thrust) {
-          facade.thrust(view.getSelected(), THRUST_PER_SECOND * dt);
-        }
-        if (angle != 0) {
-          facade.turn(view.getSelected(), angle);
-        }
-        for (IShip ship : ships) {
-          facade.move(ship, dt);
-        }
-        view.repaint();
-      }
-    });
-    this.setFocusTraversalKeysEnabled(false);
-
-    this.addKeyListener(new KeyAdapter() {
-      @Override
-      public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-        case KeyEvent.VK_UP:
-          thrust = true;
-          view.setThrust(true);
-          break;
-        case KeyEvent.VK_LEFT:
-          angle = Math.PI / 20;
-          break;
-        case KeyEvent.VK_RIGHT:
-          angle = -Math.PI / 20;
-          break;
-        case KeyEvent.VK_TAB:
-          view.selectNext();
-          break;
-        case KeyEvent.VK_C:
-          view.setShowCollisions(!view.getShowCollisions());
-          break;
-        case KeyEvent.VK_ESCAPE:
-          System.exit(0);
-        }
-      }
-
-      @Override
-      public void keyReleased(KeyEvent e) {
-        switch (e.getKeyCode()) {
-        case KeyEvent.VK_UP:
-          thrust = false;
-          view.setThrust(false);
-          break;
-        case KeyEvent.VK_LEFT:
-          angle = 0;
-          break;
-        case KeyEvent.VK_RIGHT:
-          angle = 0;
-          break;
-        }
-      }
-    });
-    this.setUndecorated(undecorated);
-    this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-    this.getContentPane().add(view);
-    this.pack();
+    this.sound = sound;
+    this.width = width;
+    this.height = height;
+    menu = new AsteroidsMenu<World, Ship, Asteroid, Bullet>(this);
+    this.facade = facade;
+    setUndecorated(undecorated);
+    setDefaultCloseOperation(EXIT_ON_CLOSE);
+    setResizable(false);
+    getContentPane().add(menu);
+    pack();
   }
 
-  private Set<IShip> initModel(IFacade facade) {
-    Set<IShip> ships = new HashSet<IShip>();
-    ships.add(facade.createShip(200, 400, 0, 0, 50, 0));
-    ships.add(facade.createShip(700, 400, 0, 0, 50, Math.PI));
-    ships.add(facade.createShip(450, 600, 0, 0, 75, -Math.PI / 2));
-    return ships;
+  public int getWidth() {
+    return width;
+  }
+
+  public int getHeight() {
+    return height;
+  }
+
+  public Sound getSound() {
+    return sound;
+  }
+  
+  public IFacade<World, Ship, Asteroid, Bullet> getFacade() {
+    return facade;
   }
 
   public void start() {
-    this.setFocusable(true);
-    this.setAutoRequestFocus(true);
-    this.setVisible(true);
-    this.requestFocus();
-    lastMove = System.currentTimeMillis();
-    timer.start();
+    menu.reset();
+    sound.start();
+    setVisible(true);
+    menu.requestFocusInWindow();
   }
 
-  public static void main(String[] args) {
-    if (GraphicsEnvironment.isHeadless()) {
-      System.out.println("no screen detected");
-      return;
-    } else {
-      // <begin>
-      IFacade facade = new asteroids.model.Facade();
-      // <end>
-      GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-      GraphicsDevice device = env.getDefaultScreenDevice();
-      Asteroids asteroids;
-      if (device.isFullScreenSupported()) {
-        asteroids = new Asteroids(facade, true);
-        device.setFullScreenWindow(asteroids);
-      } else {
-        asteroids = new Asteroids(facade, false);
-      }
-      asteroids.start();
+  public void startSinglePlayerGame() {
+    World world = facade.createWorld(width, height);
+    Ship player = facade.createShip(width / 2., height / 2., 0, 0, 40, 0, 5E15);
+    facade.addShip(world, player);
+    Asteroid asteroid1 = facade.createAsteroid(100, 100, 25, 50, 60);
+    facade.addAsteroid(world, asteroid1);
+    Asteroid asteroid2 = facade.createAsteroid(600, 100, -30, -40, 80);
+    facade.addAsteroid(world, asteroid2);
+    view = new WorldView<World, Ship, Asteroid, Bullet>(this, world, player, null);
+    if (!isUndecorated())
+      view.setPreferredSize(new Dimension(width, height));
+    getContentPane().remove(menu);
+    getContentPane().add(view);
+    revalidate();
+    repaint();
+    view.requestFocusInWindow();
+    view.startGame();
+  }
+
+  public void startMultiPlayerGame() {
+    World world = facade.createWorld(width, height);
+    Ship player1 = facade.createShip(width / 5 * 4, height / 2., 0, 0, 40, Math.PI, 5E15);
+    facade.addShip(world, player1);
+    Ship player2 = facade.createShip(width / 5, height / 2., 0, 0, 40, 0, 5E15);
+    facade.addShip(world, player2);
+    Asteroid asteroid1 = facade.createAsteroid(width / 2, height / 2, 25, 50, 75);
+    facade.addAsteroid(world, asteroid1);
+    Asteroid asteroid2 = facade.createAsteroid(600, 100, -30, -40, 40);
+    facade.addAsteroid(world, asteroid2);
+    Asteroid asteroid3 = facade.createAsteroid(990, 550, -20, -3, 25);
+    facade.addAsteroid(world, asteroid3);
+    Asteroid asteroid4 = facade.createAsteroid(40, height - 100, 10, -8, 15);
+    facade.addAsteroid(world, asteroid4);
+    view = new WorldView<World, Ship, Asteroid, Bullet>(this, world, player1, player2);
+    if (!isUndecorated())
+      view.setPreferredSize(new Dimension(width, height));
+    getContentPane().remove(menu);
+    getContentPane().add(view);
+    revalidate();
+    repaint();
+    view.requestFocusInWindow();
+    view.startGame();
+  }
+
+  public void showMenu() {
+    if (view != null) {
+      getContentPane().remove(view);
+      view = null;
     }
+    menu.reset();
+    getContentPane().add(menu);
+    revalidate();
+    repaint();
+    menu.requestFocusInWindow();
+    pack();
+    menu.repaint();
+  }
+
+  public static void main(final String[] args) {
+    boolean tryFullscreen = true;
+    boolean enableSound = true;
+    for(String arg : args) {
+      if(arg.equals("-window")) {
+        tryFullscreen = false;
+      } else if(arg.equals("-nosound")) {
+        enableSound = false;
+      } else {
+        System.out.println("unknown option: " + arg);
+        return;
+      }
+    }
+    if (args.length > 0 && args[0].equals("-window")) {
+      tryFullscreen = false;
+    }
+    if (GraphicsEnvironment.isHeadless()) {
+      System.out.println("no screen found");
+      return;
+    }
+    // <begin>
+    IFacade<asteroids.model.World, asteroids.model.Ship, asteroids.model.Asteroid, asteroids.model.Bullet> facade = new asteroids.model.Facade();
+    // <end>
+    GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice screen = env.getDefaultScreenDevice();
+    Asteroids<asteroids.model.World, asteroids.model.Ship, asteroids.model.Asteroid, asteroids.model.Bullet> asteroids;
+    Sound sound = enableSound ? new FileSoundManager("asteroids/resources/sounds.txt") : new NullSound();
+    if (tryFullscreen && screen.isFullScreenSupported()) {
+      Rectangle dimensions = screen.getDefaultConfiguration().getBounds();
+      asteroids = new Asteroids<asteroids.model.World, asteroids.model.Ship, asteroids.model.Asteroid, asteroids.model.Bullet>(facade, dimensions.width, dimensions.height, true, sound);
+      screen.setFullScreenWindow(asteroids);
+    } else {
+      asteroids = new Asteroids<asteroids.model.World, asteroids.model.Ship, asteroids.model.Asteroid, asteroids.model.Bullet>(facade, 1024, 768, false, sound);
+    }
+    asteroids.start();
   }
 }

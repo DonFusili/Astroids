@@ -9,7 +9,7 @@ import asteroids.model.*;
 
 public class ShipTest {
 	
-	IFacade facadeTester;
+
 	IShip iShipTester;
 	Ship shipTester;
 	
@@ -339,7 +339,7 @@ public class ShipTest {
 		Ship ship2 = new Ship(-20, 0, 2, 0, 10, 0);
 		double time = ship1.getTimeToCollision(ship2);
 		assertFalse(time == Double.POSITIVE_INFINITY);
-		assertEquals(5, time, 0.5);
+		assertEquals(5, time, Util.getEpsilon());
 	}
 	
 	@Test

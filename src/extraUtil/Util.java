@@ -1,4 +1,4 @@
-package asteroids;
+package extraUtil;
 
 public class Util {
   public static final double EPSILON = 0.0001;

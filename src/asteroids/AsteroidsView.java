@@ -63,10 +63,10 @@ public class AsteroidsView extends JPanel {
     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     int height = getHeight();
     for (IShip ship : ships) {
-      double radius = facade.getRadius(ship);
-      double angle = -facade.getDirection(ship);
-      double x = facade.getX(ship);
-      double y = height - facade.getY(ship);
+      double radius = facade.getShipRadius(ship);
+      double angle = -facade.getShipDirection(ship);
+      double x = facade.getShipX(ship);
+      double y = height - facade.getShipY(ship);
       if (ship == selected) {
         g2d.setColor(Color.RED);
       } else {
@@ -101,20 +101,20 @@ public class AsteroidsView extends JPanel {
       if (first != null && !facade.overlap(selected, first)) {
         // draw circles
         double dt = facade.getTimeToCollision(selected, first);
-        int x1_ = (int) (facade.getX(selected) + dt * facade.getXVelocity(selected));
-        int y1_ = height - (int) (facade.getY(selected) + dt * facade.getYVelocity(selected));
-        int radius1 = (int) facade.getRadius(selected);
+        int x1_ = (int) (facade.getShipX(selected) + dt * facade.getShipXVelocity(selected));
+        int y1_ = height - (int) (facade.getShipY(selected) + dt * facade.getShipYVelocity(selected));
+        int radius1 = (int) facade.getShipRadius(selected);
         float[] dashPattern = { 10, 5 };
         g2d.setColor(Color.LIGHT_GRAY);
         g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10, dashPattern, 0));
         g2d.drawOval(x1_ - radius1, y1_ - radius1, 2 * radius1, 2 * radius1);
-        g2d.drawLine((int) facade.getX(selected), height - (int) facade.getY(selected), x1_, y1_);
-        int x2_ = (int) (facade.getX(first) + dt * facade.getXVelocity(first));
-        int y2_ = height - (int) (facade.getY(first) + dt * facade.getYVelocity(first));
+        g2d.drawLine((int) facade.getShipX(selected), height - (int) facade.getShipY(selected), x1_, y1_);
+        int x2_ = (int) (facade.getShipX(first) + dt * facade.getShipXVelocity(first));
+        int y2_ = height - (int) (facade.getShipY(first) + dt * facade.getShipYVelocity(first));
 
-        int radius2 = (int) facade.getRadius(first);
+        int radius2 = (int) facade.getShipRadius(first);
         g2d.drawOval(x2_ - radius2, y2_ - radius2, 2 * radius2, 2 * radius2);
-        g2d.drawLine((int) facade.getX(first), height - (int) facade.getY(first), x2_, y2_);
+        g2d.drawLine((int) facade.getShipX(first), height - (int) facade.getShipY(first), x2_, y2_);
       }
       // draw cross
       for (IShip ship : ships) {

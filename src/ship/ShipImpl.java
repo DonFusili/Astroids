@@ -1,9 +1,10 @@
-package asteroids.model;
+package ship;
 
 import asteroids.IShip;
-import asteroids.Util;
 import be.kuleuven.cs.som.annotate.*;
 import java.lang.Math;
+
+import extraUtil.Util;
 
 
 /**
@@ -11,18 +12,18 @@ import java.lang.Math;
  * @author Deevid De Meyer and Joost Verplancke
  * @Version 1.0
  * @Invar The radius will always be valid, that is: bigger than the LOWERBOUND_RADIUS
- * 			| this.getRadius() <= LOWERBOUND_RADIUS
+ * 			| isValidRadius(this.getRadius())
  * @Invar The LOWERBOUND_RADIUS will always be bigger than zero
  * 			| LOWERBOUND_RADIUS > 0
  * @Invar The coordinates will always be valid
  * 			| isValidCoordinate(this.getXCoordinate()) && isValidCoordinate(this.getYCoordinate())
  * @Invar The total speed will always be lower than or equal to the max allowable speed at that moment
  * 			| this.getSpeed() < this.getMaxSpeed()
- * TODO: Other Invars?		
+ * TODO: Other Change invars for better compatibility
  *
  */
 
-public class Ship implements IShip {
+public class ShipImpl implements IShip {
 	
 	// Constructors, all implemented defensively
 	
@@ -34,7 +35,7 @@ public class Ship implements IShip {
 	 * 			The given radius must be valid.
 	 * 			|!isValidRadius(radius)
 	 */
-	public Ship (double radius) throws IllegalArgumentException{
+	public ShipImpl (double radius) throws IllegalArgumentException{
 		if(!isValidRadius(radius)) throw new IllegalArgumentException();		
 		this.setXCoordinate(0);
 		this.setYCoordinate(0);
@@ -58,7 +59,7 @@ public class Ship implements IShip {
 	 * 				components does not satisfy our conditions, e.g. the radius has to be a defined double
 	 * 				bigger than the lower bound of the radius (which can be accessed through the 
 	 */
-	public Ship(double XPosition, double YPosition, double XSpeed, double YSpeed, double radius, double angle) throws IllegalArgumentException{
+	public ShipImpl(double XPosition, double YPosition, double XSpeed, double YSpeed, double radius, double angle) throws IllegalArgumentException{
 		if(!isValidRadius(radius)) throw new IllegalArgumentException();		
 		this.setXCoordinate(XPosition);
 		this.setYCoordinate(YPosition);
@@ -339,51 +340,13 @@ public class Ship implements IShip {
 	 * 			| result = radius != null && radius != NaN && radius >= LOWERBOUND_RADIUS
 	 */
 	public static boolean isValidRadius(double radius){
-		return (Double)radius != null && (Double)radius != Double.NaN && radius >= getLowerboundRadius();
+		return (Double)radius != null && (Double)radius != Double.NaN && radius >= LOWERBOUND_RADIUS;
 	}
 	
 	private final double radius;
 	
-	private static final double STANDARD_LOWERBOUND = 10;
-	private static double LOWERBOUND_RADIUS = STANDARD_LOWERBOUND;
-	public static double getLowerboundRadius(){
-		return LOWERBOUND_RADIUS;
-	}
-	
-	/**
-	 * This method is used to make sure all ships created from now on have a radius bigger than the given argument. If the proposed lowerbound 
-	 * for the radii isn't acceptable, we throw an IllegalArgumentException, otherwise we adjust the lowerbound for radii (acceptable through the
-	 * static getLowerBoundRadius method).
-	 * @param newLower
-	 * @post	If the proposed new lowerbound for radii is acceptable, we adjust the static variable
-	 * 			| if(isValidLowerRadius(newLower))
-	 * 				then (post Ship).getLowerBoundRadius() == newLower
-	 * @throws IllegalArgumentException if the proposed lowerbound is not acceptable.
-	 * 			| !isValidLowerRadius(newLower)
-	 */
-	public static void setLowerBoundRadius(double newLower) throws IllegalArgumentException{
-		if(!isValidLowerRadius(newLower)) throw new IllegalArgumentException();
-		LOWERBOUND_RADIUS = newLower;
-	}
-	
-	/**
-	 * checker for the lowerbound of radii of ships
-	 * @param radius
-	 * @return lowerbound radii of ships have to be bigger than 0 and have to be a number.
-	 * 			| result = radius > 0
-	 */
-	public static boolean isValidLowerRadius(double radius){
-		if(Double.isNaN(radius)) return false;
-		return radius > 0;
-	}
+	public static final double LOWERBOUND_RADIUS = 10;
 
-	/**
-	 * return the lowerbound for radii to the value it initially had
-	 * @post (new)getLowerboundRadius = STANDARD_LOWERBOUND;
-	 */
-	public static void standardLowerboundRadius(){
-		setLowerBoundRadius(STANDARD_LOWERBOUND);
-	}
 	
 	// Controlling the ship
 	
@@ -525,7 +488,7 @@ public class Ship implements IShip {
 	 * 			| ship == null
 	 * 
 	 */
-	public double getDistanceBetween(Ship ship) throws NullPointerException{
+	public double getDistanceBetween(ShipImpl ship) throws NullPointerException{
 		if(ship == null) throw new NullPointerException();
 		if(ship == this) return 0;
 		double cDistance = this.getDistanceBetweenCenters(ship);
@@ -542,7 +505,7 @@ public class Ship implements IShip {
 	 * @throws NullPointerException if the ship we want to call the non-static method against is null
 	 * 			| ship1 == null
 	 */
-	public static double getDistanceBetween(Ship ship1, Ship ship2) throws NullPointerException{
+	public static double getDistanceBetween(ShipImpl ship1, ShipImpl ship2) throws NullPointerException{
 		if(ship1 == null) throw new NullPointerException();
 		return ship1.getDistanceBetween(ship2);
 	}
@@ -556,7 +519,7 @@ public class Ship implements IShip {
 	 * @throws NullPointerException if the given ship is null
 	 * 			| ship == null
 	 */
-	private double getDistanceBetweenCenters(Ship ship) throws NullPointerException{
+	private double getDistanceBetweenCenters(ShipImpl ship) throws NullPointerException{
 		if(ship == null) throw new NullPointerException();
 		return Math.sqrt((this.getXCoordinate() - ship.getXCoordinate()) * (this.getXCoordinate() - ship.getXCoordinate()) 
 							+ (this.getYCoordinate() - ship.getYCoordinate()) * (this.getYCoordinate() - ship.getYCoordinate()));
@@ -574,7 +537,7 @@ public class Ship implements IShip {
 	 * 			We throw a nullpointerException if the parameter ship is null.
 	 * 			| ship == null
 	 */
-	public boolean overlap(Ship ship) throws NullPointerException{
+	public boolean overlap(ShipImpl ship) throws NullPointerException{
 		if(ship == null) throw new NullPointerException();
 		if(ship == this) return true;
 		return Util.fuzzyLessThanOrEqualTo(this.getDistanceBetween(ship), 0);
@@ -588,7 +551,7 @@ public class Ship implements IShip {
 	 * 			| result = ((ship.getXCoordinate()- this.getXCoordinate()) * (ship.getXSpeed() - this.getXSpeed())) + 
 				((ship.getYCoordinate() - this.getYCoordinate()) * (ship.getYSpeed() - this.getYSpeed())) < 0
 	 */
-	private boolean MovingTowardsEachOther(Ship ship) {
+	private boolean MovingTowardsEachOther(ShipImpl ship) {
 		return ((ship.getXCoordinate()- this.getXCoordinate()) * (ship.getXSpeed() - this.getXSpeed())) + 
 				((ship.getYCoordinate() - this.getYCoordinate()) * (ship.getYSpeed() - this.getYSpeed())) < 0;
 		}
@@ -601,7 +564,7 @@ public class Ship implements IShip {
 	 * @return We return 
 	 * @throws
 	 */
-	public static boolean movingTowardsEachOther(Ship ship1, Ship ship2) throws NullPointerException{
+	public static boolean movingTowardsEachOther(ShipImpl ship1, ShipImpl ship2) throws NullPointerException{
 		if(ship1 == null) throw new NullPointerException();
 		return ship1.MovingTowardsEachOther(ship2);
 	}
@@ -614,7 +577,7 @@ public class Ship implements IShip {
 	 * 			| ...
 	 * @throws NullPointerException
 	 */
-	public double getTimeToCollision(Ship ship) throws NullPointerException {
+	public double getTimeToCollision(ShipImpl ship) throws NullPointerException {
 		if(ship == null) throw new NullPointerException();
 		if(ship == this) return 0;
 		if(!this.MovingTowardsEachOther(ship)) return Double.POSITIVE_INFINITY;
@@ -680,7 +643,7 @@ public class Ship implements IShip {
 	 * @throws IllegalArgumentException
 	 * @throws IllegalStateException
 	 */
-	public double[] getCollisionPosition(Ship ship) throws NullPointerException, IllegalArgumentException, IllegalStateException {
+	public double[] getCollisionPosition(ShipImpl ship) throws NullPointerException, IllegalArgumentException, IllegalStateException {
 		if(ship == null) throw new NullPointerException();
 		if(ship == this) throw new IllegalArgumentException();
 		double time = this.getTimeToCollision(ship);
@@ -725,7 +688,7 @@ public class Ship implements IShip {
 	 * @throws NullPointerException if the ship we want to call the non-static method against is null
 	 * 			| ship1 == null
 	 */
-	public static double[] getCollisionPoint(Ship ship1, Ship ship2) throws NullPointerException{
+	public static double[] getCollisionPoint(ShipImpl ship1, ShipImpl ship2) throws NullPointerException{
 		if(ship1 == null) throw new NullPointerException();
 		return ship1.getCollisionPosition(ship2);
 	}

@@ -292,4 +292,13 @@ public interface IFacade<World, Ship, Asteroid, Bullet> {
    * Return the source of <code>bullet</code>.
    */
   public Ship getBulletSource(Bullet bullet);
+  
+  public boolean overlap(IShip ship1, IShip ship2);
+
+  public double getTimeToCollision(IShip ship1, IShip ship2);
+
+  public double[] getCollisionPosition(IShip ship1, IShip ship2);
 }
+
+
+

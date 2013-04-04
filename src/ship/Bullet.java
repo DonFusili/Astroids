@@ -1,8 +1,8 @@
 package ship;
 
-public class BulletImpl {
+public class Bullet {
 
-	public BulletImpl() {
+	public Bullet() {
 		// TODO Auto-generated constructor stub
 	}
 

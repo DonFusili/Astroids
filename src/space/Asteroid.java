@@ -1,8 +1,8 @@
 package space;
 
-public class AsteroidImpl {
+public class Asteroid {
 
-	public AsteroidImpl() {
+	public Asteroid() {
 		// TODO Auto-generated constructor stub
 	}
 

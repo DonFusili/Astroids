@@ -7,7 +7,7 @@ import java.awt.Rectangle;
 
 import javax.swing.JFrame;
 
-import ship.*;
+// import ship.*;
 
 @SuppressWarnings("serial")
 public class Asteroids<World, Ship, Asteroid, Bullet> extends JFrame {
@@ -135,18 +135,18 @@ public class Asteroids<World, Ship, Asteroid, Bullet> extends JFrame {
       return;
     }
     // <begin>
-    IFacade<space.WorldImpl, ship.ShipImpl, space.AsteroidImpl, ship.BulletImpl> facade = new ship.FacadeImpl();
+    IFacade<space.World, ship.Ship, space.Asteroid, ship.Bullet> facade = new ship.Facade();
     // <end>
     GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
     GraphicsDevice screen = env.getDefaultScreenDevice();
-    Asteroids<space.WorldImpl, ship.ShipImpl, space.AsteroidImpl, ship.BulletImpl> asteroids;
+    Asteroids<space.World, ship.Ship, space.Asteroid, ship.Bullet> asteroids;
     Sound sound = enableSound ? new FileSoundManager("asteroids/resources/sounds.txt") : new NullSound();
     if (tryFullscreen && screen.isFullScreenSupported()) {
       Rectangle dimensions = screen.getDefaultConfiguration().getBounds();
-      asteroids = new Asteroids<space.WorldImpl, ship.ShipImpl, space.AsteroidImpl, ship.BulletImpl>(facade, dimensions.width, dimensions.height, true, sound);
+      asteroids = new Asteroids<space.World, ship.Ship, space.Asteroid, ship.Bullet>(facade, dimensions.width, dimensions.height, true, sound);
       screen.setFullScreenWindow(asteroids);
     } else {
-      asteroids = new Asteroids<space.WorldImpl, ship.ShipImpl, space.AsteroidImpl, ship.BulletImpl>(facade, 1024, 768, false, sound);
+      asteroids = new Asteroids<space.World, ship.Ship, space.Asteroid, ship.Bullet>(facade, 1024, 768, false, sound);
     }
     asteroids.start();
   }

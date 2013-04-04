@@ -18,13 +18,14 @@ import static java.lang.Math.*;
 public class AsteroidsView extends JPanel {
 
   private Set<IShip> ships;
-  private IFacade facade;
+  @SuppressWarnings("rawtypes")
+private IFacade facade;
   private IShip selected;
   private Iterator<IShip> iterator;
   private boolean thrust = false;
   private boolean showCollisions = false;
 
-  public AsteroidsView(Set<IShip> ships, IFacade facade) {
+  public AsteroidsView(Set<IShip> ships, @SuppressWarnings("rawtypes") IFacade facade) {
     super(true);
     this.ships = ships;
     this.iterator = ships.iterator();
@@ -56,7 +57,8 @@ public class AsteroidsView extends JPanel {
     return showCollisions;
   }
 
-  @Override
+  @SuppressWarnings("unchecked")
+@Override
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
     Graphics2D g2d = (Graphics2D) g;

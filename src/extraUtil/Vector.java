@@ -12,6 +12,20 @@ public class Vector {
 		y = yValue;
 	}
 	
+	public Vector (double angle, double length, double maxlength) throws IllegalArgumentException {
+		if(!isValidAngle(angle) || !isValidLength(length, maxlength)) throw new IllegalArgumentException();
+		x = length * Math.cos(angle);
+		y = length * Math.sin(angle);
+	}
+	
+	public static boolean isValidAngle(double angle){
+		return true;
+	}
+	
+	public static boolean isValidLength(double length, double maxlength){
+		return length <= maxlength;
+	}
+	
 	@Immutable
 	@Basic
 	public double getX(){
@@ -53,5 +67,28 @@ public class Vector {
 	public static double dotProduct(Vector vec1, Vector vec2){
 		return vec1.getX() * vec2.getX() + vec1.getY() * vec2.getY();
 	}
+
+	public Vector getDeepClone() {
+		return new Vector(this.getX(), this.getY());
+	}
+	
+	public static Vector difference(Vector vec1, Vector vec2){
+		return new Vector(vec1.getX() - vec2.getX(), vec1.getY() - vec2.getY());
+	}
+	
+	public static double square(Vector vec){
+		return Vector.dotProduct(vec, vec);
+	}
+	
+	public static Vector add(Vector[] args){
+		double x = 0;
+		double y = 0;
+		for(Vector vector : args){
+			x += vector.getX();
+			y += vector.getY();
+		}
+		return new Vector(x, y);
+	}
+	
 
 }

@@ -1,0 +1,33 @@
+Facade moet geen commentaar krijgen.
+
+Misschien handig dat ik het hier nog eens zeg: enkel Ship moet ook niet-formeel worden becommentarieerd.
+Alle andere klassen moeten in de eerste plaats formele commentaar krijgen (dus die wiskundige uitleg die er overal bijkwam).
+
+Flying is de superklasse voor Asteroid, Bullet en Ship. Zorgt ervoor dat alles een plaats- en
+snelheidsvector heeft. Samen met de radius zorgt het ook voor collisiedetectie en definieert een
+aantal methodes die dan lager worden geimplementeerd en op die manier collisies afhandelen.
+De volledige klasse moet bijna behercommentarieerd worden omdat de meeste methodes uit ander klassen
+omhoog zijn getrokken via refactor. De commentaar voor getTimeToCollision mag echter nog achterwege
+gelaten worden, die doe ik wel (is volledig uitgelegd geweest in de les, maar je was er niet, dus
+zou een beetje stom zijn da jij die doet en dat ik ze dan opnieuw zou doen).
+
+Vector is de onderliggende datastructuur, moet nog volledig becommentarieerd worden, is echter minder
+belangrijk want zeer eenvoudig en wil ik desnoods wel voor mijn rekening nemen.
+
+Ook Bullet is niet zo moeilijk en moet je enkel doen wanneer je tijd en goesting over zou hebben, anders
+doe ik hem wel eens.
+
+World en Ship zijn de belangrijkste twee klassen om commentaar bij te schrijven. Zoals gezegd moet 
+Ship als enige klasse ook niet-formele commentaar krijgen. World dient vooral als speciaal soort
+verzameling van objecten. In World zijn er een aantal methodes nog niet geïmplementeerd, daar moet
+je voor mijn part geen commentaar schrijven (zeker bij evolve nog niet), zal ik ook wel doen. 
+Ship heeft ook nog een vijftal niet-geïmplementeerde methodes, maar de namen spreken voor zich,
+dus ik ga ervan uit dat je daar het contract wel kunt schrijven. 
+
+Alles in package asteroids is aangepast naar de generische types waar nodig en moet je dus in theorie
+niets meer aan veranderen. resources dienen gewoon voor de geluidseffecten. extraUtil houdt alles qua
+extra rekendingen bij. Space is alles dat nodig is om de wereld vanuit onze kant voor te stellen en
+package ship is hetgeen door mensen bestuurd is. Tests houdt natuurlijk de tests bij.
+
+En nu neem ik even een pauze. Ik implementeer de laatste methodes tegen woensdagavond en begin dan ook
+aan de tests te schrijven.

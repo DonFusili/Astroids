@@ -64,7 +64,7 @@
       <operations public="true" package="true" protected="true" private="true"/>    
     </display>  
   </class>  
-  <class id="8" language="java" name="ship.Facade" project="Asteroids" file="/Asteroids/src/ship/Facade.java" 
+  <class id="8" language="java" name="space.Facade" project="Asteroids" file="/Asteroids/src/space/Facade.java" 
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="351" width="319" x="922" y="1004"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 

@@ -2,11 +2,13 @@ package tests;
 
 import static org.junit.Assert.*;
 
+
 import org.junit.*;
 
 import extraUtil.Util;
 
 import ship.*;
+import space.Flying;
 
 import asteroids.*;
 
@@ -84,7 +86,7 @@ public class ShipTest {
 	
 	@Test
 	public void basicConstructorOK(){
-		Ship ship = new Ship(17);
+		Flying ship = new Ship(17);
 		assertTrue(ship.getRadius() == 17);
 		assertTrue(ship.getXCoordinate() == 0);
 		assertTrue(ship.getYCoordinate() == 0);
@@ -95,7 +97,7 @@ public class ShipTest {
 	
 	@Test
 	public void totalConstructorOK(){
-		Ship ship = new Ship(25, -20, -6, 14, 33, 5);
+		Flying ship = new Ship(25, -20, -6, 14, 33, 5);
 		assertTrue(ship.getRadius() == 33);
 		assertTrue(ship.getXCoordinate() == 25);
 		assertTrue(ship.getYCoordinate() == -20);
@@ -107,20 +109,20 @@ public class ShipTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testBasicConstructorTooSmallRadius(){
 		@SuppressWarnings("unused")
-		Ship ship = new Ship(5);
+		Flying ship = new Ship(5);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testTotalConstructorIllegalX(){
 		@SuppressWarnings("unused")
-		Ship ship = new Ship(Double.NaN, 0, 0, 0, 11, 0);
+		Flying ship = new Ship(Double.NaN, 0, 0, 0, 11, 0);
 	}
 	
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testBasicConstructorNegativeRadius(){
 		@SuppressWarnings("unused")
-		Ship ship = new Ship(-16);
+		Flying ship = new Ship(-16);
 	}
 	
 	//Setters
@@ -128,7 +130,7 @@ public class ShipTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testSetXNAN(){
-		Ship ship = new Ship(11);
+		Flying ship = new Ship(11);
 		ship.setXCoordinate(Double.NaN);
 	}
 	
@@ -223,29 +225,29 @@ public class ShipTest {
 	
 	@Test
 	public void testMovingTowardsEachOther(){
-		Ship ship1 = new Ship(20, 0, -2, 0, 10, Math.PI);
-		Ship ship2 = new Ship(-20, 0, 2, 0, 10, 0);
+		Flying ship1 = new Ship(20, 0, -2, 0, 10, Math.PI);
+		Flying ship2 = new Ship(-20, 0, 2, 0, 10, 0);
 		assertTrue(Ship.movingTowardsEachOther(ship1, ship2));
 	}
 	
 	@Test
 	public void testNotMovingTowardsEachOther(){
-		Ship ship1 = new Ship(20, 0, 2, 0, 10, Math.PI);
-		Ship ship2 = new Ship(-20, 0, -2, 0, 10, 0);
+		Flying ship1 = new Ship(20, 0, 2, 0, 10, Math.PI);
+		Flying ship2 = new Ship(-20, 0, -2, 0, 10, 0);
 		assertFalse(Ship.movingTowardsEachOther(ship1, ship2));
 	}
 	
 	@Test
 	public void testMovingTowardsEachOtherChasing(){
-		Ship ship1 = new Ship(20, 0, -2, 0, 10, Math.PI);
-		Ship ship2 = new Ship(-20, 0, -1, 0, 10, 0);
+		Flying ship1 = new Ship(20, 0, -2, 0, 10, Math.PI);
+		Flying ship2 = new Ship(-20, 0, -1, 0, 10, 0);
 		assertTrue(Ship.movingTowardsEachOther(ship1, ship2));
 	}
 	
 	@Test
 	public void testNotMovingTowardsEachOtherChasing(){
-		Ship ship1 = new Ship(20, 0, 2, 0, 10, Math.PI);
-		Ship ship2 = new Ship(-20, 0, 1, 0, 10, 0);
+		Flying ship1 = new Ship(20, 0, 2, 0, 10, Math.PI);
+		Flying ship2 = new Ship(-20, 0, 1, 0, 10, 0);
 		assertFalse(Ship.movingTowardsEachOther(ship1, ship2));
 	}
 	
@@ -256,29 +258,29 @@ public class ShipTest {
 	
 	@Test
 	public void testDistanceToOtherShipPositiveDistance(){
-		Ship ship1 = new Ship(20, 0, 2, 0, 10, Math.PI);
-		Ship ship2 = new Ship(-20, 0, -2, 0, 10, 0);
+		Flying ship1 = new Ship(20, 0, 2, 0, 10, Math.PI);
+		Flying ship2 = new Ship(-20, 0, -2, 0, 10, 0);
 		assertTrue(Ship.getDistanceBetween(ship1, ship2) == 20);
 	}
 	
 	@Test
 	public void testDistanceToOtherShipNegativeDistance(){
-		Ship ship1 = new Ship(20, 0, 2, 0, 21, Math.PI);
-		Ship ship2 = new Ship(-20, 0, -2, 0, 20, 0);
+		Flying ship1 = new Ship(20, 0, 2, 0, 21, Math.PI);
+		Flying ship2 = new Ship(-20, 0, -2, 0, 20, 0);
 		assertTrue(Ship.getDistanceBetween(ship1, ship2) < 0);
 	}
 	
 	@Test
 	public void testDistanceToOtherShipTouching(){
-		Ship ship1 = new Ship(20, 0, 2, 0, 20, Math.PI);
-		Ship ship2 = new Ship(-20, 0, -2, 0, 20, 0);
+		Flying ship1 = new Ship(20, 0, 2, 0, 20, Math.PI);
+		Flying ship2 = new Ship(-20, 0, -2, 0, 20, 0);
 		assertTrue(Ship.getDistanceBetween(ship1, ship2) == 0);
 	}
 	
 	@Test
 	public void testTimeToCollisionOK(){
-		Ship ship1 = new Ship(20, 0, -2, 0, 10, Math.PI);
-		Ship ship2 = new Ship(-20, 0, 2, 0, 10, 0);
+		Flying ship1 = new Ship(20, 0, -2, 0, 10, Math.PI);
+		Flying ship2 = new Ship(-20, 0, 2, 0, 10, 0);
 		double time = ship1.getTimeToCollision(ship2);
 		assertFalse(time == Double.POSITIVE_INFINITY);
 		assertEquals(5, time, Util.getEpsilon());
@@ -286,8 +288,8 @@ public class ShipTest {
 	
 	@Test
 	public void testCollisionPointXAxis(){
-		Ship ship1 = new Ship(20, 0, -2, 0, 10, 0);
-		Ship ship2 = new Ship(-20, 0, 2, 0, 10, 0);
+		Flying ship1 = new Ship(20, 0, -2, 0, 10, 0);
+		Flying ship2 = new Ship(-20, 0, 2, 0, 10, 0);
 		double[] pos = ship1.getCollisionPosition(ship2);
 		assertEquals(0, pos[1], 0);
 		assertEquals(0, pos[0], 0);
@@ -295,8 +297,8 @@ public class ShipTest {
 	
 	@Test
 	public void testCollisionYAxis(){
-		Ship ship1 = new Ship(0, 20, 0, -2, 10, 0);
-		Ship ship2 = new Ship(0, -20, 0, 2, 10, 0);
+		Flying ship1 = new Ship(0, 20, 0, -2, 10, 0);
+		Flying ship2 = new Ship(0, -20, 0, 2, 10, 0);
 		double[] pos = ship1.getCollisionPosition(ship2);
 		assertEquals(0, pos[1], 0);
 		assertEquals(0, pos[0], 0);
@@ -304,11 +306,12 @@ public class ShipTest {
 	
 	@Test
 	public void testCollisionKissAndRide(){
-		Ship ship1 = new Ship(7, 5, 2, 0, 10, 0);
-		Ship ship2 = new Ship(27, 25, -2, 0, 10, 0);
+		Flying ship1 = new Ship(7, 5, 2, 0, 10, 0);
+		Flying ship2 = new Ship(27, 25, -2, 0, 10, 0);
 		double[] pos = Ship.getCollisionPoint(ship1, ship2);
 		assertEquals(15, pos[1], 0);
 		assertEquals(17, pos[0], 0);
 	}
+	
 
 }

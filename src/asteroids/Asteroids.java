@@ -6,6 +6,8 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 
 import javax.swing.JFrame;
+import ship.*;
+import space.*;
 
 // import ship.*;
 
@@ -135,12 +137,12 @@ public class Asteroids<World, Ship, Asteroid, Bullet> extends JFrame {
       return;
     }
     // <begin>
-    IFacade<space.World, ship.Ship, space.Asteroid, ship.Bullet> facade = new ship.Facade();
+    IFacade<space.World, ship.Ship, space.Asteroid, ship.Bullet> facade = new space.Facade();
     // <end>
     GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
     GraphicsDevice screen = env.getDefaultScreenDevice();
     Asteroids<space.World, ship.Ship, space.Asteroid, ship.Bullet> asteroids;
-    Sound sound = enableSound ? new FileSoundManager("asteroids/resources/sounds.txt") : new NullSound();
+    Sound sound = enableSound ? new FileSoundManager("Asteroids/resources/sounds.txt") : new NullSound();
     if (tryFullscreen && screen.isFullScreenSupported()) {
       Rectangle dimensions = screen.getDefaultConfiguration().getBounds();
       asteroids = new Asteroids<space.World, ship.Ship, space.Asteroid, ship.Bullet>(facade, dimensions.width, dimensions.height, true, sound);

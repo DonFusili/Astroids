@@ -1,5 +1,6 @@
 package space;
 
+import asteroids.CollisionListener;
 import be.kuleuven.cs.som.annotate.*;
 import java.util.*;
 
@@ -10,6 +11,7 @@ import ship.*;
  * 
  * @author Joost Verplancke
  * @version 1.0
+ * TODO: comment
  */
 public class World {
 
@@ -17,7 +19,7 @@ public class World {
 	
 	
 	public World() {
-		this(100, 100);
+		this(1000, 1000);
 	}
 	
 	public World(double width, double height){
@@ -62,23 +64,57 @@ public class World {
 	private Set<Bullet> bullets = new HashSet<Bullet>();
 
 
-	public void addShip(Ship ship) throws IllegalArgumentException {
+	public void add(Ship ship) throws IllegalArgumentException {
 		if(!isValidShipToAdd(ship)) throw new IllegalArgumentException();
 		ships.add(ship);		
 	}
 	
+	public void add(Asteroid asteroid) throws IllegalArgumentException {
+		if(!isValidAsteroidToAdd(asteroid)) throw new IllegalArgumentException();
+		asteroids.add(asteroid);
+	}
+	
 	public static boolean isValidShipToAdd(Ship ship){
-		return ship != null && ship.getWorld() == null;
+		return ship != null && ship.isAvailableToAdd();
+	}
+	
+	public static boolean isValidAsteroidToAdd(Flying asteroid){
+		return asteroid != null && asteroid.isAvailableToAdd();
 	}
 
-	public void addAsteroid(Asteroid asteroid) {
+	
+	public boolean contains(Flying asteroid){
+		return asteroids.contains(asteroid);
+	}
+	
+	public boolean contains(Ship ship){
+		return ships.contains(ship);
+	}
+	
+	public boolean contains(Bullet bullet){
+		return bullets.contains(bullet);
+	}
+	
+
+
+	public void evolve(double dt, CollisionListener collisionListener) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void removeShip(Ship ship) {
+	public void remove(Asteroid asteroid) {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void remove(Ship ship){
+		// TODO implement
+	}
+
+	public void shoot(Ship ship, Bullet shotbullet) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

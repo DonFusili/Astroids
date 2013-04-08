@@ -30,10 +30,12 @@ public class WorldView<World, Ship, Asteroid, Bullet> extends JPanel implements 
   private static final int RIGHT_P1 = KeyEvent.VK_RIGHT;
   private static final int FIRE_P1 = KeyEvent.VK_SPACE;
   private static final int THRUSTER_P1 = KeyEvent.VK_UP;
-  private static final int LEFT_P2 = KeyEvent.VK_A; // change to Q on Azerty
+  // private static final int LEFT_P2 = KeyEvent.VK_A; // Qwerty
+  private static final int LEFT_P2 = KeyEvent.VK_Q; //Azerty
   private static final int RIGHT_P2 = KeyEvent.VK_D;
   private static final int FIRE_P2 = KeyEvent.VK_CONTROL;
-  private static final int THRUSTER_P2 = KeyEvent.VK_W; // change to Z on Azerty
+  // private static final int THRUSTER_P2 = KeyEvent.VK_W; // Qwerty
+  private static final int THRUSTER_P2 = KeyEvent.VK_Z; //Azerty
 
   private static final int TIMER_DELAY = 1000 / 30;
 

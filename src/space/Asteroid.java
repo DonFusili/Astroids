@@ -58,7 +58,6 @@ public class Asteroid extends Flying {
 	public void addToWorld(World world) throws IllegalStateException, IllegalArgumentException{
 		if(! this.isAvailableToAdd()) throw new IllegalStateException();
 		world.add(this);
-		this.setWorld(world);
 	}
 
 
@@ -82,6 +81,12 @@ public class Asteroid extends Flying {
 
 	@Override
 	protected void collideWithBoundary() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void terminate() {
 		// TODO Auto-generated method stub
 		
 	}

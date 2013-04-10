@@ -32,7 +32,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public World createWorld(double width, double height) {
+	public World createWorld(double width, double height) throws ModelException {
 		try{
 			return new World(width, height);			
 		}
@@ -45,7 +45,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public Set<Ship> getShips(World world) {
+	public Set<Ship> getShips(World world) throws ModelException  {
 		try{
 			return world.getShips();
 		}
@@ -57,7 +57,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public Set<Asteroid> getAsteroids(World world) {
+	public Set<Asteroid> getAsteroids(World world) throws ModelException {
 		try{
 			return world.getAsteroids();
 		}
@@ -69,7 +69,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public Set<Bullet> getBullets(World world) {
+	public Set<Bullet> getBullets(World world) throws ModelException {
 		try{
 			return world.getBullets();
 		}
@@ -81,7 +81,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public void addShip(World world, Ship ship) {
+	public void addShip(World world, Ship ship) throws ModelException {
 		try{
 			world.add(ship);
 		}
@@ -93,7 +93,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public void addAsteroid(World world, Asteroid asteroid) {
+	public void addAsteroid(World world, Asteroid asteroid) throws ModelException {
 		try{
 			world.add(asteroid);
 		}
@@ -106,7 +106,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public void removeShip(World world, Ship ship) {
+	public void removeShip(World world, Ship ship) throws ModelException {
 		try{
 			world.remove(ship);
 		}
@@ -118,7 +118,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public void removeAsteroid(World world, Asteroid asteroid) {
+	public void removeAsteroid(World world, Asteroid asteroid) throws ModelException {
 		try{
 			world.remove(asteroid);
 		}
@@ -132,7 +132,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 	@Override
 	public void evolve(World world, double dt,
-			CollisionListener collisionListener) {
+			CollisionListener collisionListener) throws ModelException {
 		try{
 			world.evolve(dt, collisionListener);
 		}
@@ -145,7 +145,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getShipX(Ship ship) {
+	public double getShipX(Ship ship) throws ModelException {
 		if( ship == null) throw new ModelException(new NullPointerException());
 		try{
 			return ship.getXCoordinate();
@@ -158,7 +158,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getShipY(Ship ship) {
+	public double getShipY(Ship ship) throws ModelException {
 		if( ship == null) throw new ModelException(new NullPointerException());
 		try{
 			return ship.getYCoordinate();
@@ -171,7 +171,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getShipXVelocity(Ship ship) {
+	public double getShipXVelocity(Ship ship) throws ModelException {
 		if( ship == null) throw new ModelException(new NullPointerException());
 		try{
 			return ship.getXSpeed();
@@ -184,7 +184,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getShipYVelocity(Ship ship) {
+	public double getShipYVelocity(Ship ship) throws ModelException {
 		if( ship == null) throw new ModelException(new NullPointerException());
 		try{
 			return ship.getYSpeed();
@@ -197,7 +197,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getShipRadius(Ship ship) {
+	public double getShipRadius(Ship ship) throws ModelException  {
 		if( ship == null) throw new ModelException(new NullPointerException());
 		try{
 			return ship.getRadius();
@@ -210,7 +210,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getShipDirection(Ship ship) {
+	public double getShipDirection(Ship ship) throws ModelException {
 		if( ship == null) throw new ModelException(new NullPointerException());
 		try{
 			return ship.getAngle();
@@ -223,7 +223,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getShipMass(Ship ship) {
+	public double getShipMass(Ship ship) throws ModelException {
 		if( ship == null) throw new ModelException(new NullPointerException());
 		try{
 			return ship.getMass();
@@ -236,7 +236,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public World getShipWorld(Ship ship) {
+	public World getShipWorld(Ship ship) throws ModelException {
 		if( ship == null) throw new ModelException(new NullPointerException());
 		try{
 			return ship.getWorld();
@@ -249,7 +249,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public boolean isShipThrusterActive(Ship ship) {
+	public boolean isShipThrusterActive(Ship ship) throws ModelException {
 		if( ship == null) throw new ModelException(new NullPointerException());
 		try{
 		return ship.isThrusterActive();
@@ -262,7 +262,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public void setThrusterActive(Ship ship, boolean active) {
+	public void setThrusterActive(Ship ship, boolean active) throws ModelException {
 		if( ship == null) throw new ModelException(new NullPointerException());
 		try{
 		ship.setThrusting(active);
@@ -275,7 +275,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public void turn(Ship ship, double angle) {
+	public void turn(Ship ship, double angle) throws ModelException {
 		if(ship == null) throw new ModelException(new NullPointerException());
 		try{
 		ship.turn(angle);
@@ -288,10 +288,10 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public void fireBullet(Ship ship) {
+	public void fireBullet(Ship ship) throws ModelException {
 		if(ship == null) throw new ModelException(new NullPointerException());
 		try{
-		ship.fireBullet();
+			ship.fireBullet();
 		}
 		catch(Exception e){
 			throw new ModelException(e);
@@ -302,7 +302,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getAsteroidX(Asteroid asteroid) {
+	public double getAsteroidX(Asteroid asteroid) throws ModelException {
 		if(asteroid == null) throw new ModelException(new NullPointerException());
 		try{
 			return asteroid.getXCoordinate();
@@ -315,7 +315,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getAsteroidY(Asteroid asteroid) {
+	public double getAsteroidY(Asteroid asteroid) throws ModelException {
 		if(asteroid == null) throw new ModelException(new NullPointerException());
 		try{
 			return asteroid.getYCoordinate();
@@ -328,7 +328,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getAsteroidXVelocity(Asteroid asteroid) {
+	public double getAsteroidXVelocity(Asteroid asteroid) throws ModelException {
 		if(asteroid == null) throw new ModelException(new NullPointerException());
 		try{
 			return asteroid.getXSpeed();
@@ -341,7 +341,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getAsteroidYVelocity(Asteroid asteroid) {
+	public double getAsteroidYVelocity(Asteroid asteroid) throws ModelException {
 		if(asteroid == null) throw new ModelException(new NullPointerException());
 		try{
 			return asteroid.getYSpeed();
@@ -354,7 +354,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getAsteroidRadius(Asteroid asteroid) {
+	public double getAsteroidRadius(Asteroid asteroid) throws ModelException {
 		if(asteroid == null) throw new ModelException(new NullPointerException());
 		try{
 			return asteroid.getRadius();
@@ -367,7 +367,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getAsteroidMass(Asteroid asteroid) {
+	public double getAsteroidMass(Asteroid asteroid) throws ModelException {
 		if(asteroid == null) throw new ModelException(new NullPointerException());
 		try{
 			return asteroid.getMass();
@@ -380,7 +380,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public World getAsteroidWorld(Asteroid asteroid) {
+	public World getAsteroidWorld(Asteroid asteroid) throws ModelException {
 		if(asteroid == null) throw new ModelException(new NullPointerException());
 		try{
 			return asteroid.getWorld();
@@ -393,7 +393,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getBulletX(Bullet bullet) {
+	public double getBulletX(Bullet bullet) throws ModelException {
 		if(bullet == null) throw new ModelException(new NullPointerException());
 		try{
 			return bullet.getXCoordinate();
@@ -406,7 +406,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getBulletY(Bullet bullet) {
+	public double getBulletY(Bullet bullet) throws ModelException {
 		if(bullet == null) throw new ModelException(new NullPointerException());
 		try{
 			return bullet.getYCoordinate();
@@ -419,7 +419,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getBulletXVelocity(Bullet bullet) {
+	public double getBulletXVelocity(Bullet bullet) throws ModelException {
 		if(bullet == null) throw new ModelException(new NullPointerException());
 		try{
 			return bullet.getXSpeed();
@@ -432,7 +432,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getBulletYVelocity(Bullet bullet) {
+	public double getBulletYVelocity(Bullet bullet) throws ModelException {
 		if(bullet == null) throw new ModelException(new NullPointerException());
 		try{
 			return bullet.getYSpeed();
@@ -445,7 +445,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getBulletRadius(Bullet bullet) {
+	public double getBulletRadius(Bullet bullet) throws ModelException {
 		if(bullet == null) throw new ModelException(new NullPointerException());
 		try{
 			return bullet.getRadius();
@@ -458,7 +458,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getBulletMass(Bullet bullet) {
+	public double getBulletMass(Bullet bullet) throws ModelException {
 		if(bullet == null) throw new ModelException(new NullPointerException());
 		try{
 			return bullet.getMass();
@@ -471,7 +471,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public World getBulletWorld(Bullet bullet) {
+	public World getBulletWorld(Bullet bullet) throws ModelException {
 		if(bullet == null) throw new ModelException(new NullPointerException());
 		try{
 			return bullet.getWorld();
@@ -484,7 +484,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public Ship getBulletSource(Bullet bullet) {
+	public Ship getBulletSource(Bullet bullet) throws ModelException {
 		if(bullet == null) throw new ModelException(new NullPointerException());
 		try{
 			return bullet.getShooter();
@@ -497,7 +497,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getWorldWidth(World world) {
+	public double getWorldWidth(World world) throws ModelException {
 		if(world == null) throw new ModelException(new NullPointerException());
 		try{
 			return world.getWidth();
@@ -510,7 +510,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getWorldHeight(World world) {
+	public double getWorldHeight(World world) throws ModelException {
 		if(world == null) throw new ModelException(new NullPointerException());
 		try{
 			return world.getHeight();
@@ -524,7 +524,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 	@Override
 	public Ship createShip(double x, double y, double xVelocity,
-			double yVelocity, double radius, double direction, double mass) {
+			double yVelocity, double radius, double direction, double mass) throws ModelException {
 		try{
 			return new Ship(x, y, xVelocity, yVelocity, radius, direction, mass);
 		}
@@ -536,7 +536,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public boolean isShip(Object o) {
+	public boolean isShip(Object o) throws ModelException {
 		if(o == null) throw new ModelException(new NullPointerException());
 		return o instanceof Ship;
 	}
@@ -545,7 +545,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 	@Override
 	public Asteroid createAsteroid(double x, double y, double xVelocity,
-			double yVelocity, double radius) {
+			double yVelocity, double radius) throws ModelException {
 		try{
 			return new Asteroid(radius, x, y, xVelocity, yVelocity);
 		}
@@ -558,14 +558,14 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 	@Override
 	public Asteroid createAsteroid(double x, double y, double xVelocity,
-			double yVelocity, double radius, Random random) {
+			double yVelocity, double radius, Random random) throws ModelException {
 		return null;
 	}
 
 
 
 	@Override
-	public boolean isAsteroid(Object o) {
+	public boolean isAsteroid(Object o) throws ModelException {
 		if(o == null) throw new ModelException(new NullPointerException());
 		return o instanceof Asteroid;
 	}
@@ -573,7 +573,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public boolean isBullets(Object o) {
+	public boolean isBullets(Object o) throws ModelException {
 		if(o == null) throw new ModelException(new NullPointerException());
 		return o instanceof Bullet;
 	}
@@ -581,7 +581,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public boolean overlap(IShip ship1, IShip ship2) {
+	public boolean overlap(IShip ship1, IShip ship2) throws ModelException {
 		try{
 			return Flying.overlap((Ship)ship1, (Ship)ship2);
 		}
@@ -593,7 +593,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double getTimeToCollision(IShip ship1, IShip ship2) {
+	public double getTimeToCollision(IShip ship1, IShip ship2) throws ModelException {
 		try{
 			return Flying.getTimeToCollision((Ship)ship1, (Ship)ship2);
 		}
@@ -605,7 +605,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 	@Override
-	public double[] getCollisionPosition(IShip ship1, IShip ship2) {
+	public double[] getCollisionPosition(IShip ship1, IShip ship2) throws ModelException {
 		try{
 			return Flying.getCollisionPoint((Ship)ship1, (Ship)ship2);
 		}

@@ -225,6 +225,18 @@ public class Ship extends Flying implements IShip {
 	public void toggleThrust(){
 		setThrusting(!this.thrusting);
 	}
+	
+	public double getThrustForce(){
+		return engineThrustForce;
+	}
+	
+	private final double engineThrustForce = STANDARD_THRUSTER_THRUSTFORCE;
+	
+	public final static double STANDARD_THRUSTER_THRUSTFORCE = 1.1e8;
+	
+	public double getAcceleration() {
+		return this.getThrustForce() / this.getMass();
+	}
 		
 	/**
 	 * TODO: comment
@@ -237,7 +249,10 @@ public class Ship extends Flying implements IShip {
 	
 	private Set<Bullet> aliveBullets = new HashSet<Bullet>();
 	
-	
+	public void bulletDies(Bullet bullet) throws IllegalArgumentException{
+		if (!aliveBullets.contains(bullet)) throw new IllegalArgumentException();
+		aliveBullets.remove(bullet);
+	}
 	
 	@Override
 	public double getMassDensity() {
@@ -246,8 +261,8 @@ public class Ship extends Flying implements IShip {
 
 	@Override
 	public void addToWorld(World world) {
-		// TODO Auto-generated method stub
-		
+		if(! this.isAvailableToAdd()) throw new IllegalStateException();
+		world.add(this);
 	}
 
 	@Override
@@ -258,6 +273,8 @@ public class Ship extends Flying implements IShip {
 	}
 	
 	private final double mass;
+	
+	
 
 
 	@Override
@@ -283,6 +300,13 @@ public class Ship extends Flying implements IShip {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	protected void terminate() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 	
 }

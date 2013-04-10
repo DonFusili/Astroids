@@ -9,6 +9,13 @@ public class Util {
     return Math.abs(x - y) <= EPSILON || Double.valueOf(x).equals(Double.valueOf(y));
   }
 
+  
+  /**
+   * 
+   * @param x
+   * @param y
+   * @return x<y?
+   */
   public static boolean fuzzyLessThanOrEqualTo(double x, double y) {
     if (fuzzyEquals(x, y)) {
       return true;

@@ -56,7 +56,7 @@ public abstract class Flying {
 	public static boolean isValidTimeInterval(double interval) {
 		boolean check = !(Double.isNaN(interval));
 		check = check && !(interval > Double.MAX_VALUE);
-		check = check && Util.fuzzyLessThanOrEqualTo(0, interval) && !Util.fuzzyEquals(0, interval);
+		check = check && 0 < interval;
 		return check;
 	}
 
@@ -320,7 +320,7 @@ public abstract class Flying {
 	 * 			|!(isValidTimeInterval(interval)
 	 */
 	public void move(double interval) throws IllegalArgumentException {
-		if(!isValidTimeInterval(interval)) throw new IllegalArgumentException();
+		// if(!isValidTimeInterval(interval)) throw new IllegalArgumentException();
 		this.relativeXDisplacement(interval * this.getXSpeed());
 		this.relativeYDisplacement(interval * this.getYSpeed());		
 	}
@@ -398,7 +398,7 @@ public abstract class Flying {
 				((ship.getYCoordinate() - this.getYCoordinate()) * (ship.getYSpeed() - this.getYSpeed())) < 0
 	 */
 	private boolean MovingTowardsEachOther(Flying flying) {
-		return Flying.movingTowardsEachOther(this, flying);
+		return Vector.dotProduct(Vector.difference(this.getSpeeds(), flying.getSpeeds()), Vector.difference(this.getCoordinates(), flying.getCoordinates())) < 0;
 	}
 	
 	public static boolean MovingTowardsEachOther(Flying one, Flying two){
@@ -532,7 +532,7 @@ public abstract class Flying {
 				}
 	
 	public void setWorld(World world) {
-		if(this.getWorld() == null) setWorld(world);
+		if(this.getWorld() == null) this.world = world;
 	}
 
 	@Immutable
@@ -584,6 +584,8 @@ public abstract class Flying {
 		flying1.collideWith(flying2);
 		flying2.collideWith(flying1);
 	}
+	
+	protected abstract void terminate();
 
 	
 }

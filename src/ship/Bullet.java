@@ -46,9 +46,11 @@ public class Bullet extends Flying{
 	}
 
 	@Immutable
+	@Basic
 	public Ship getShooter() {
 		return shooter;
 	}
+	
 
 	@Override
 	protected void collideWithShip(Ship ship) {
@@ -73,6 +75,14 @@ public class Bullet extends Flying{
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	protected void terminate() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
 
 
 }

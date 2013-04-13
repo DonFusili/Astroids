@@ -173,7 +173,7 @@ public class World {
 			}
 		}
 		t = collideWithBoundaryTime(flying);
-		if(t < wouldcollidebefore){
+		if(t != Double.POSITIVE_INFINITY && t < wouldcollidebefore){
 			collision1 = new Collision(flying, null, t);
 		}
 		if(!(collision1 == null)) { collisionsorder.add(collision1);
@@ -182,8 +182,22 @@ public class World {
 		}
 	
 	private double collideWithBoundaryTime(Flying flying){
-		
-		return 0;
+		extraUtil.Vector coo = flying.getCoordinates();
+		double radius = flying.getRadius();
+		double xs = flying.getSpeeds().getX();
+		double ys = flying.getSpeeds().getY();
+		double timex = Double.POSITIVE_INFINITY;
+		double timey = Double.POSITIVE_INFINITY;
+		if(xs == 0 && ys == 0) return Double.POSITIVE_INFINITY;
+		if(xs != 0){
+			if(xs < 0) timex = ((this.getWidth()/2) + coo.getX() - radius)/xs;
+			if(xs > 0) timex = ((this.getWidth()/2) - coo.getX() - radius)/xs;
+		}
+		if(ys !=0){
+			if(ys < 0) timey = ((this.getHeight()/2) + coo.getY() - radius)/ys;
+			if(ys > 0) timey = ((this.getHeight()/2) - coo.getY() -radius)/ys;
+		}
+		return Math.min(timex, timey);
 	}
 		
 	
@@ -194,6 +208,7 @@ public class World {
 	
 	
 	public void evolve(double dt, CollisionListener collisionListener) {
+		double dtt = dt;
 		boolean skipcol = false;
 		Collision nextCollision = null;
 		double nextcollisiontime = Double.MAX_VALUE;
@@ -206,20 +221,21 @@ public class World {
 		catch(NoSuchElementException e){
 			skipcol = true;
 		}
-		while(!skipcol && (Util.fuzzyLessThanOrEqualTo(nextcollisiontime, dt) || Util.fuzzyLessThanOrEqualTo(nextcollisiontime, 0))){
+		while(!skipcol && (Util.fuzzyLessThanOrEqualTo(nextcollisiontime, dtt) || Util.fuzzyLessThanOrEqualTo(nextcollisiontime, 0))){
 			collisionToHandle = nextCollision;
 			evolvewithoutcollisions(nextcollisiontime, false);
 			handleCollision(collisionToHandle);
 			collisionsorder.remove(collisionToHandle);
-			dt -= nextcollisiontime;
+			dtt -= nextcollisiontime;
 			try{
-			nextCollision = collisionsorder.first();
-			nextcollisiontime = nextCollision.getDelay();
+				nextCollision = collisionsorder.first();
+				nextcollisiontime = nextCollision.getDelay();
 			}
 			catch(NoSuchElementException e){
 				skipcol = true;
 			}
 		}
+		evolvewithoutcollisions(dtt, true);
 	}
 	
 	private void handleCollision(Collision collision){

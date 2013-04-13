@@ -90,5 +90,8 @@ public class Vector {
 		return new Vector(x, y);
 	}
 	
+	public static Vector scalarMult(double scalar, Vector vec){
+		return new Vector(scalar * vec.getX(), scalar*vec.getY());
+	}
 
 }

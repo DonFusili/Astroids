@@ -265,7 +265,7 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 	public void setThrusterActive(Ship ship, boolean active) throws ModelException {
 		if( ship == null) throw new ModelException(new NullPointerException());
 		try{
-		ship.setThrusting(active);
+			ship.setThrusting(active);
 		}
 		catch(Exception e){
 			throw new ModelException(NA);

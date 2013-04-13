@@ -54,10 +54,7 @@ public abstract class Flying {
 	 * 		   | result = !(Double.isNaN(interval)) && !(interval > Double.MAX_VALUE) && interval > 0
 	 */
 	public static boolean isValidTimeInterval(double interval) {
-		boolean check = !(Double.isNaN(interval));
-		check = check && !(interval > Double.MAX_VALUE);
-		check = check && 0 < interval;
-		return check;
+		return interval >= 0;
 	}
 
 	/**
@@ -320,9 +317,33 @@ public abstract class Flying {
 	 * 			|!(isValidTimeInterval(interval)
 	 */
 	public void move(double interval) throws IllegalArgumentException {
-		// if(!isValidTimeInterval(interval)) throw new IllegalArgumentException();
-		this.relativeXDisplacement(interval * this.getXSpeed());
-		this.relativeYDisplacement(interval * this.getYSpeed());		
+		if(!isValidTimeInterval(interval)) throw new IllegalArgumentException();
+		this.setCoordinates(Vector.add(this.getCoordinates(), Vector.scalarMult(interval, this.getSpeeds())));
+	}
+	
+	/**
+	 * TODO: comment
+	 * @param vec
+	 */
+	public void setSpeeds(Vector vec){
+		if(isValidSpeed(vec.getX(), vec.getY())) this.speeds = vec;
+	}
+	
+	/**
+	 * TODO: comment
+	 * @param vec
+	 */
+	public void setCoordinates(Vector vec){
+		if(isValidCoordinates(vec)) this.coordinates = vec;
+	}
+	
+	/**
+	 * TODO: comment
+	 * @param vec
+	 * @return
+	 */
+	public static boolean isValidCoordinates(Vector vec){
+		return !(vec == null) && !Double.isNaN(vec.getX()) && !Double.isNaN(vec.getY());
 	}
 
 	private World world;

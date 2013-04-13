@@ -158,22 +158,30 @@ public class Ship extends Flying implements IShip {
 	 * 					@Eff this.setYSpeed(this.getYSpeed() + usedAcceleration * Math.sin(this.getAngle()))
 	 */
 	public void thrust(double acceleration){
-		//If our acceleration is not acceptable, we don't have to do a thing.
+//		//If our acceleration is not acceptable, we don't have to do a thing.
+//		if(!isValidAcceleration(acceleration)) return;
+//		double newXSpeed = this.getXSpeed() + acceleration * Math.cos(this.getAngle());
+//		double newYSpeed = this.getYSpeed() + acceleration * Math.sin(this.getAngle());
+//		// If the acceleration would make us move faster than the max allowable speed, we switch to the max speed in the direction the ship is facing at the moment.
+//		if(Util.fuzzyLessThanOrEqualTo(getMaxSpeed() * getMaxSpeed(), newXSpeed * newXSpeed + newYSpeed * newYSpeed)){
+//			newXSpeed = getMaxSpeed() * Math.cos(this.getAngle());
+//			newYSpeed = getMaxSpeed() * Math.sin(this.getAngle());
+//		}
+//		/**
+//		 * circumvent the fact that our setter checks whether we exceed the maximum allowable speed
+//		 * by setting the y speed to zero first
+//		 */
+//		this.setYSpeed(0);
+//		this.setXSpeed(newXSpeed);
+//		this.setYSpeed(newYSpeed);
+		
 		if(!isValidAcceleration(acceleration)) return;
-		double newXSpeed = this.getXSpeed() + acceleration * Math.cos(this.getAngle());
-		double newYSpeed = this.getYSpeed() + acceleration * Math.sin(this.getAngle());
-		// If the acceleration would make us move faster than the max allowable speed, we switch to the max speed in the direction the ship is facing at the moment.
-		if(Util.fuzzyLessThanOrEqualTo(getMaxSpeed() * getMaxSpeed(), newXSpeed * newXSpeed + newYSpeed * newYSpeed)){
-			newXSpeed = getMaxSpeed() * Math.cos(this.getAngle());
-			newYSpeed = getMaxSpeed() * Math.sin(this.getAngle());
+		try {
+		this.setSpeeds(Vector.add(this.getSpeeds(), new Vector(this.getAngle(), acceleration, World.LIGHTSPEED)));
 		}
-		/**
-		 * circumvent the fact that our setter checks whether we exceed the maximum allowable speed
-		 * by setting the y speed to zero first
-		 */
-		this.setYSpeed(0);
-		this.setXSpeed(newXSpeed);
-		this.setYSpeed(newYSpeed);
+		catch(IllegalArgumentException e){
+			return;
+		}
 		
 	}
 
@@ -186,7 +194,7 @@ public class Ship extends Flying implements IShip {
 	 * 			| result = !(Double.isNaN(acceleration)) && !(acceleration < 0)
 	 */
 	public static boolean isValidAcceleration(double acceleration){
-		return !(Double.isNaN(acceleration)) && !(acceleration > Double.MAX_VALUE) &&!Util.fuzzyLessThanOrEqualTo(acceleration, 0);
+		return !(acceleration < 0);
 	}
 	
 	/**

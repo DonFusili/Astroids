@@ -5,7 +5,7 @@ import extraUtil.Util;
 public class Collision implements Comparable<Collision> {
 	
 	public Collision(Flying flying1, Flying flying2, double delay){
-		if(flying1 == null) throw new NullPointerException();
+		if(flying1 == null || flying2 == null) throw new NullPointerException();
 		if(Util.fuzzyLessThanOrEqualTo(delay, 0));
 		this.flying1 = flying1;
 		this.flying2 = flying2;

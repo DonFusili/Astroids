@@ -174,10 +174,9 @@ public class Ship extends Flying implements IShip {
 //		this.setYSpeed(0);
 //		this.setXSpeed(newXSpeed);
 //		this.setYSpeed(newYSpeed);
-		
-		if(!isValidAcceleration(acceleration)) return;
+		if(!isValidAcceleration(acceleration)){ return;}
 		try {
-		this.setSpeeds(Vector.add(this.getSpeeds(), new Vector(this.getAngle(), acceleration, World.LIGHTSPEED)));
+		this.setSpeeds(Vector.add(this.getSpeeds(), new Vector(this.getAngle(), acceleration, Double.MAX_VALUE)));
 		}
 		catch(IllegalArgumentException e){
 			return;
@@ -238,9 +237,10 @@ public class Ship extends Flying implements IShip {
 		return engineThrustForce;
 	}
 	
-	private final double engineThrustForce = STANDARD_THRUSTER_THRUSTFORCE;
+	private final double engineThrustForce = WORKABLE_THRUSTFORCE;
 	
 	public final static double STANDARD_THRUSTER_THRUSTFORCE = 1.1e8;
+	public final static double WORKABLE_THRUSTFORCE = 3.1e15;
 	
 	public double getAcceleration() {
 		return this.getThrustForce() / this.getMass();
@@ -303,11 +303,7 @@ public class Ship extends Flying implements IShip {
 		
 	}
 
-	@Override
-	protected void collideWithBoundary() {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 	@Override
 	protected void terminate() {

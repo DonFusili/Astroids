@@ -139,10 +139,10 @@ public class World {
 		for(Ship flying2 : ships){
 			if(!(flying2 == flying)){
 				t = Flying.getTimeToCollision(flying, flying2);
-				if(!(t == Double.POSITIVE_INFINITY) && t < wouldcollidebefore &&  t < collisions.get(flying2).getDelay()){
+				if(!(t == Double.POSITIVE_INFINITY) && t < wouldcollidebefore &&  (collisions.get(flying2) == null || t < collisions.get(flying2).getDelay())){
 					wouldcollidebefore = t;
-					collisionsorder.remove(collisions.get(flying));
-					collisionsorder.remove(collisions.get(flying2));
+					try{ collisionsorder.remove(collisions.get(flying)); } catch(NullPointerException e) {};
+					try{ collisionsorder.remove(collisions.get(flying2)); } catch(NullPointerException e) {};
 					collision1 = new Collision(flying, flying2, t);
 					collisions.put(flying2, collision1);
 				}
@@ -151,10 +151,10 @@ public class World {
 		for(Asteroid flying2 : asteroids){
 			if(!(flying2 == flying)){
 				t = Flying.getTimeToCollision(flying, flying2);
-				if(!(t == Double.POSITIVE_INFINITY) && t < wouldcollidebefore &&  t < collisions.get(flying2).getDelay()){
+				if(!(t == Double.POSITIVE_INFINITY) && t < wouldcollidebefore &&  (collisions.get(flying2) == null || t < collisions.get(flying2).getDelay())){
 					wouldcollidebefore = t;
-					collisionsorder.remove(collisions.get(flying));
-					collisionsorder.remove(collisions.get(flying2));
+					try{ collisionsorder.remove(collisions.get(flying)); } catch(NullPointerException e) {};
+					try{ collisionsorder.remove(collisions.get(flying2)); } catch(NullPointerException e) {};
 					collision1 = new Collision(flying, flying2, t);
 					collisions.put(flying2, collision1);
 				}
@@ -163,42 +163,20 @@ public class World {
 		for(Bullet flying2 : bullets){
 			if(!(flying2 == flying)){
 				t = Flying.getTimeToCollision(flying, flying2);
-				if(!(t == Double.POSITIVE_INFINITY) && t < wouldcollidebefore &&  t < collisions.get(flying2).getDelay()){
+				if(!(t == Double.POSITIVE_INFINITY) && t < wouldcollidebefore &&  (collisions.get(flying2) == null || t < collisions.get(flying2).getDelay())){
 					wouldcollidebefore = t;
-					collisionsorder.remove(collisions.get(flying));
-					collisionsorder.remove(collisions.get(flying2));
+					try{ collisionsorder.remove(collisions.get(flying)); } catch(NullPointerException e) {};
+					try{ collisionsorder.remove(collisions.get(flying2)); } catch(NullPointerException e) {};
 					collision1 = new Collision(flying, flying2, t);
 					collisions.put(flying2, collision1);
 				}
 			}
-		}
-		t = collideWithBoundaryTime(flying);
-		if(t != Double.POSITIVE_INFINITY && t < wouldcollidebefore){
-			collision1 = new Collision(flying, null, t);
 		}
 		if(!(collision1 == null)) { collisionsorder.add(collision1);
 									collisions.put(flying, collision1);
 		}
 		}
 	
-	private double collideWithBoundaryTime(Flying flying){
-		extraUtil.Vector coo = flying.getCoordinates();
-		double radius = flying.getRadius();
-		double xs = flying.getSpeeds().getX();
-		double ys = flying.getSpeeds().getY();
-		double timex = Double.POSITIVE_INFINITY;
-		double timey = Double.POSITIVE_INFINITY;
-		if(xs == 0 && ys == 0) return Double.POSITIVE_INFINITY;
-		if(xs != 0){
-			if(xs < 0) timex = ((this.getWidth()/2) + coo.getX() - radius)/xs;
-			if(xs > 0) timex = ((this.getWidth()/2) - coo.getX() - radius)/xs;
-		}
-		if(ys !=0){
-			if(ys < 0) timey = ((this.getHeight()/2) + coo.getY() - radius)/ys;
-			if(ys > 0) timey = ((this.getHeight()/2) - coo.getY() -radius)/ys;
-		}
-		return Math.min(timex, timey);
-	}
 		
 	
 	private Map<Flying, Collision> collisions = new HashMap<Flying, Collision>();
@@ -234,7 +212,9 @@ public class World {
 			catch(NoSuchElementException e){
 				skipcol = true;
 			}
+			
 		}
+
 		evolvewithoutcollisions(dtt, true);
 	}
 	
@@ -248,14 +228,16 @@ public class World {
 	}
 	
 	private void evolvewithoutcollisions(double dt, boolean thrustingenabled){
+		double dtt = dt;
+		if(dtt < 0) dtt = 0;
 		for(Ship ship : ships){
-			ship.move(dt);
+			ship.move(dtt);
 		}
 		for(Asteroid asteroid : asteroids){
-			asteroid.move(dt);
+			asteroid.move(dtt);
 		}
 		for(Bullet bullet : bullets){
-			bullet.move(dt);
+			bullet.move(dtt);
 		}
 		if(thrustingenabled){
 			for(Ship ship : ships){
@@ -266,10 +248,10 @@ public class World {
 			}
 		}
 		for(Collision toadjust : collisionsorder){
-			toadjust.shortenDelayWith(dt);
+			toadjust.shortenDelayWith(dtt);
 		}
 		for(Collision toadjust : collisions.values()){
-			toadjust.shortenDelayWith(dt);
+			toadjust.shortenDelayWith(dtt);
 		}
 	}
 	

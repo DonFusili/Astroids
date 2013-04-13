@@ -70,11 +70,6 @@ public class Bullet extends Flying{
 		
 	}
 
-	@Override
-	protected void collideWithBoundary() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	protected void terminate() {

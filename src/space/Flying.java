@@ -318,6 +318,10 @@ public abstract class Flying {
 	 */
 	public void move(double interval) throws IllegalArgumentException {
 		if(!isValidTimeInterval(interval)) throw new IllegalArgumentException();
+		try{
+			this.collideWithBoundary();
+		}
+		catch(NullPointerException e){}
 		this.setCoordinates(Vector.add(this.getCoordinates(), Vector.scalarMult(interval, this.getSpeeds())));
 	}
 	
@@ -586,9 +590,9 @@ public abstract class Flying {
 	
 	private void collideWith(Flying flying){
 		switch(flying.getFlyertype()) {
-		case SHIP: this.collideWithShip((Ship)flying);
-		case ASTEROID : this.collideWithAsteroid((Asteroid)flying);
-		case BULLET : this.collideWithBullet((Bullet) flying);
+		case SHIP: this.collideWithShip((Ship)flying); break;
+		case ASTEROID : this.collideWithAsteroid((Asteroid)flying); break;
+		case BULLET : this.collideWithBullet((Bullet) flying); break;
 		default : assert false;
 		}
 	}
@@ -599,7 +603,22 @@ public abstract class Flying {
 	
 	protected abstract void collideWithAsteroid(Asteroid asteroid);
 	
-	protected abstract void collideWithBoundary();
+	public void collideWithBoundary(){
+		boolean invertx = false;
+		boolean inverty = false;
+		double newx = this.getXSpeed();
+		double newy = this.getYSpeed();
+		double radius = this.getRadius();
+		if(newx > 0 &&((this.getXCoordinate() + radius) >= this.getWorld().getWidth())) invertx = true;
+		if(newx < 0 &&((this.getXCoordinate() - radius) <= (-1 * this.getWorld().getWidth()))) invertx = true;
+		if(newy > 0 && ((this.getYCoordinate() + radius) >= this.getWorld().getHeight())) inverty = true;
+		if(newy < 0 && ((this.getYCoordinate() - radius) <= (-1 * this.getWorld().getHeight()))) inverty = true;
+		if(invertx || inverty){
+			if(invertx) newx = -1 * newx;
+			if(inverty) newy = -1 * newy;
+			this.setSpeeds(new Vector(newx, newy));
+		}
+	}
 	
 	public static void collide(Flying flying1, Flying flying2){
 		flying1.collideWith(flying2);

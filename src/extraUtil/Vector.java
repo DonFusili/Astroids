@@ -12,8 +12,8 @@ public class Vector {
 		y = yValue;
 	}
 	
-	public Vector (double angle, double length, double maxlength) throws IllegalArgumentException {
-		if(!isValidAngle(angle) || !isValidLength(length, maxlength)) throw new IllegalArgumentException();
+	public Vector (double angle, double length, double maxLength) throws IllegalArgumentException {
+		if(!isValidAngle(angle) || !isValidLength(length, maxLength)) throw new IllegalArgumentException();
 		x = length * Math.cos(angle);
 		y = length * Math.sin(angle);
 	}

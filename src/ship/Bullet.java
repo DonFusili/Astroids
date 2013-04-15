@@ -36,7 +36,7 @@ public class Bullet extends Flying{
 
 	@Override
 	public void addToWorld(World world) {
-		// TODO Auto-generated method stub
+		// TODO Deevid
 		
 	}
 
@@ -54,26 +54,26 @@ public class Bullet extends Flying{
 
 	@Override
 	protected void collideWithShip(Ship ship) {
-		// TODO Auto-generated method stub
+		// TODO Deevid
 		
 	}
 
 	@Override
 	protected void collideWithBullet(Bullet bullet) {
-		// TODO Auto-generated method stub
+		// TODO Deevid
 		
 	}
 
 	@Override
 	protected void collideWithAsteroid(Asteroid asteroid) {
-		// TODO Auto-generated method stub
+		// TODO Deevid
 		
 	}
 
 
 	@Override
 	protected void terminate() {
-		// TODO Auto-generated method stub
+		// TODO Deevid
 		
 	}
 	

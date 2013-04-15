@@ -45,31 +45,56 @@ public class Ship extends Flying implements IShip {
 	}
 	
 	/**
-	 * 
+	 * Test method
 	 * @throws IllegalArgumentException
 	 */
 	public Ship() throws IllegalArgumentException{
 		this(1);
 	}
 	
+	/**
+	 * Constructor for ship, defines the position, speed, radius, angle/orientation and mass of the ship.
+	 * @param XPosition
+	 * 			The starting horizontal position
+	 * @param YPosition
+	 * 			The starting vertical position
+	 * @param XSpeed
+	 * 			The starting horizontal speed
+	 * @param YSpeed
+	 * 			The starting vertical speed
+	 * @param radius
+	 * 			The radius of the ship
+	 * @param angle
+	 * 			The starting angle/orientation of the ship
+	 * @throws IllegalArgumentException
+	 * TODO
+	 * 			|We throw an exception if either the radius, one of the coordinates, one of the speed
+	 * 				components, the angle or the mass does not satisfy our conditions, e.g. the radius has to be a defined double
+	 * 				bigger than the lower bound of the radius
+	 */
 	public Ship(double XPosition, double YPosition, double XSpeed, double YSpeed, double radius, double angle, double mass) throws IllegalArgumentException{
 		this(XPosition, YPosition, XSpeed, YSpeed, radius, angle, null, mass);
 	}
-	
-	public Ship(double XPosition, double YPosition, double XSpeed, double YSpeed, double radius, double angle){
-		this(XPosition, YPosition, XSpeed, YSpeed, radius, angle, null, 1);
-	}
-	
+
 	
 	/**
-	 * 
+	 * Constructor for ship, defines the position, speed, radius, angle/orientation, world and mass of the ship.
 	 * @param XPosition
+	 * 			The starting horizontal position
 	 * @param YPosition
+	 * 			The starting vertical position
 	 * @param XSpeed
+	 * 			The starting horizontal speed
 	 * @param YSpeed
+	 * 			The starting vertical speed
 	 * @param radius
+	 * 			The radius of the ship
 	 * @param angle
+	 * 			The starting angle/orientation of the ship
+	 * @param world
+	 * 			The game world the ship is in
 	 * @throws IllegalArgumentException
+	 * TODO
 	 * 			|We throw an exception if either the radius, one of the coordinates or one of the speed
 	 * 				components does not satisfy our conditions, e.g. the radius has to be a defined double
 	 * 				bigger than the lower bound of the radius (which can be accessed through the 
@@ -107,6 +132,7 @@ public class Ship extends Flying implements IShip {
 	/**
 	 * Radii for ships are not free for the choosing
 	 * @param radius
+	 * 			Radius of the ship
 	 * @return 	whether the radius is valid, by which we mean we check if the radius is a number, isn't null and is bigger than the set static lowerbound radius.
 	 * 			| result = radius != null && radius != NaN && radius >= LOWERBOUND_RADIUS
 	 */
@@ -126,6 +152,13 @@ public class Ship extends Flying implements IShip {
 		return thrusting;
 	}
 	
+	/**
+	 * 	The setter for thrusting.
+	 * @param thrusting
+	 * 			Boolean defining if the ship is thrusting or not
+	 * @post sets thrusting to the given value
+	 * 		| new.thrusting = thrusting
+	 */
 	public void setThrusting(boolean thrusting){
 		this.thrusting = thrusting;
 	}
@@ -200,6 +233,7 @@ public class Ship extends Flying implements IShip {
 	 * This method is used to turn the ship relatively to its current position.
 	 * This method is implemented nominally
 	 * @param angle
+	 * 			Angle the ship has to turn relative to it's current orientation
 	 * @Pre The angle has to be between -Pi and Pi
 	 * 		| -Math.PI < angle =< Math.PI
 	 * @post The new angle gets normalized to a value between 0 and 2*Pi and then adjusted
@@ -227,12 +261,18 @@ public class Ship extends Flying implements IShip {
 	}
 	
 	/**
-	 * This method is used to toggle whether the 
+	 * This method is used to toggle whether the ship is thrusting or not
+	 * @post if the ship was thrusting it will no longer thrust, and vice versa
+	 * 		| new.thrusting != this.thrusting
 	 */
 	public void toggleThrust(){
 		setThrusting(!this.thrusting);
 	}
 	
+	/**
+	 * 	The getter for the thrust force.
+	 * @return thrusting
+	 */
 	public double getThrustForce(){
 		return engineThrustForce;
 	}
@@ -242,12 +282,17 @@ public class Ship extends Flying implements IShip {
 	public final static double STANDARD_THRUSTER_THRUSTFORCE = 1.1e8;
 	public final static double WORKABLE_THRUSTFORCE = 3.1e15;
 	
+	/**
+	 * 	Method for returning the acceleration, calculated by dividing the thrust force with the mass of the ship 
+	 * @return this.getThrustForce() / this.getMass()
+	 */
 	public double getAcceleration() {
 		return this.getThrustForce() / this.getMass();
 	}
 		
 	/**
-	 * TODO: comment
+	 * Fires a bullet by calling the bullet constructor and by adding it to the world and list of shot bullets
+	 * TODO
 	 */
 	public void fireBullet() {
 		Bullet shotbullet = new Bullet(this, 3, 250);
@@ -257,16 +302,27 @@ public class Ship extends Flying implements IShip {
 	
 	private Set<Bullet> aliveBullets = new HashSet<Bullet>();
 	
+	/**
+	 * Fires a bullet by calling the bullet constructor and by adding it to the world and list of shot bullets
+	 * TODO
+	 */
 	public void bulletDies(Bullet bullet) throws IllegalArgumentException{
 		if (!aliveBullets.contains(bullet)) throw new IllegalArgumentException();
 		aliveBullets.remove(bullet);
 	}
 	
+	/**
+	 * Unneeded method?
+	 * TODO
+	 */
 	@Override
 	public double getMassDensity() {
 		return 0;
 	}
 
+	/**
+	 * TODO
+	 */
 	@Override
 	public void addToWorld(World world) {
 		if(! this.isAvailableToAdd()) throw new IllegalStateException();
@@ -274,6 +330,10 @@ public class Ship extends Flying implements IShip {
 		this.setWorld(world);
 	}
 
+	/**
+	 * Getter for the mass of a ship
+	 * @return mass
+	 */
 	@Override
 	@Immutable
 	@Basic
@@ -285,33 +345,56 @@ public class Ship extends Flying implements IShip {
 	
 	
 
-
+	/**
+	 * Checks if another ship is colliding with this one
+	 * @param ship
+	 * 		The other ship to check collision with
+	 * TODO
+	 */
 	@Override
 	protected void collideWithShip(Ship ship) {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
+	/**
+	 * Checks if a given bullet is colliding with the ship
+	 * @param bullet
+	 * 		The bullet to check collision with
+	 * TODO
+	 */
 	@Override
 	protected void collideWithBullet(Bullet bullet) {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
+	/**
+	 * Checks if a given asteroid is colliding with the ship
+	 * @param bullet
+	 * 		The asteroid to check collision with
+	 * TODO
+	 */
 	@Override
 	protected void collideWithAsteroid(Asteroid asteroid) {
 		// TODO Auto-generated method stub
 		
 	}
 
-
-
+	/**
+	 * Checks if the ship is colliding with the boundary of the world
+	 * TODO
+	 */
 	@Override
 	protected void terminate() {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * Destroys the current ship
+	 * TODO
+	 */
 	@Override
 	public void die() {
 		// remove all links to world
@@ -323,4 +406,3 @@ public class Ship extends Flying implements IShip {
 	
 	
 }
-

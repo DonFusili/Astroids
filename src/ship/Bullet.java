@@ -99,6 +99,8 @@ public class Bullet extends Flying{
 			this.getWorld().recalibrate(this);
 		}
 	}
+	
+	
 
 	@Override
 	public void die() {

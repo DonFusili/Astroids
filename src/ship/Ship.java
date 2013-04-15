@@ -271,6 +271,7 @@ public class Ship extends Flying implements IShip {
 	public void addToWorld(World world) {
 		if(! this.isAvailableToAdd()) throw new IllegalStateException();
 		world.add(this);
+		this.setWorld(world);
 	}
 
 	@Override

@@ -563,7 +563,7 @@ public abstract class Flying {
 	@Immutable
 	public abstract double getMass();
 	
-	public double getSphericalMass(){
+	protected double getSphericalMass(){
 		double mass = 4 / 3 * Math.PI *
 				this.getRadius() * this.getRadius() * this.getRadius() *
 				this.getMassDensity();

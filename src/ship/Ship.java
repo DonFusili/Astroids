@@ -32,25 +32,7 @@ public class Ship extends Flying implements IShip {
 	
 	//TODO: comment constructors!
 	
-	/**
-	 * The basic constructor of the ship, the position, speed and direction are undefined,
-	 * only the radius is implemented.
-	 * @param radius
-	 * @throws IllegalArgumentException
-	 * 			The given radius must be valid.
-	 * 			|!isValidRadius(radius)
-	 */
-	public Ship (double radius) throws IllegalArgumentException{
-		this(0, 0, 0, 0, radius, 0, 1);
-	}
-	
-	/**
-	 * Test method
-	 * @throws IllegalArgumentException
-	 */
-	public Ship() throws IllegalArgumentException{
-		this(1);
-	}
+
 	
 	/**
 	 * Constructor for ship, defines the position, speed, radius, angle/orientation and mass of the ship.
@@ -78,6 +60,7 @@ public class Ship extends Flying implements IShip {
 
 	
 	/**
+	 * TODO
 	 * Constructor for ship, defines the position, speed, radius, angle/orientation, world and mass of the ship.
 	 * @param XPosition
 	 * 			The starting horizontal position
@@ -93,11 +76,28 @@ public class Ship extends Flying implements IShip {
 	 * 			The starting angle/orientation of the ship
 	 * @param world
 	 * 			The game world the ship is in
+	 * @post The new value for the horizontal coordinate is equal to the given inital horizontal coordinate
+	 * 		| setXCoordinate(XPosition)
+	 * @post The new value for the horizontal coordinate is equal to the given inital horizontal coordinate
+	 * 		| setYCoordinate(YPosition)
+	 * @post The new value for the horizontal coordinate is equal to the given inital horizontal coordinate
+	 * 		| setXSpeed(Xspeed)
+	 * @post The new value for the horizontal coordinate is equal to the given inital horizontal coordinate
+	 * 		| setYSpeed(Yspeed)
+	 * @post The new value for the horizontal coordinate is equal to the given inital horizontal coordinate
+	 * 		| setRadius(radius)
+	 * @post The new value for the horizontal coordinate is equal to the given inital horizontal coordinate
+	 * 		| setAngle(angle)
+	 * @post The new value for the horizontal coordinate is equal to the given inital horizontal coordinate
+	 * 		| setWorld(world)
+	 * @post The new value for the horizontal coordinate is equal to the given inital horizontal coordinate
+	 * 		| setMass(mass)
+	 * @post The value for thrusting is set to false
+	 * 		
 	 * @throws IllegalArgumentException
-	 * TODO
-	 * 			|We throw an exception if either the radius, one of the coordinates or one of the speed
-	 * 				components does not satisfy our conditions, e.g. the radius has to be a defined double
-	 * 				bigger than the lower bound of the radius (which can be accessed through the 
+	 * 		|We throw an exception if either the radius, one of the coordinates or one of the speed
+	 * 		components does not satisfy our conditions, e.g. the radius has to be a defined double
+	 * 		bigger than the lower bound of the radius (which can be accessed through the 
 	 */
 	public Ship(double XPosition, double YPosition, double XSpeed, double YSpeed, double radius, double angle, World world, double mass) throws IllegalArgumentException{
 		super(radius, new Vector(XPosition, YPosition), new Vector(XSpeed, YSpeed), Flyer.SHIP);		
@@ -270,7 +270,7 @@ public class Ship extends Flying implements IShip {
 	}
 	
 	/**
-	 * 	The getter for the thrust force.
+	 * 	Returns the engine thrust force.
 	 * @return thrusting
 	 */
 	public double getThrustForce(){
@@ -292,7 +292,13 @@ public class Ship extends Flying implements IShip {
 		
 	/**
 	 * Fires a bullet by calling the bullet constructor and by adding it to the world and list of shot bullets
-	 * TODO
+	 * @effect Creates a bullet
+	 * 		| Bullet(this, 3, 250)
+	 * @effect Adds the bullet to the world of the ship
+	 * 		| TODO
+	 * @post Adds the bullet to the hashset of alive bullets
+	 * 		| aliveBullets.contains(shotbullet)
+	 * 
 	 */
 	public void fireBullet() {
 		Bullet shotbullet = new Bullet(this, 3, 250);
@@ -303,8 +309,14 @@ public class Ship extends Flying implements IShip {
 	private Set<Bullet> aliveBullets = new HashSet<Bullet>();
 	
 	/**
-	 * Fires a bullet by calling the bullet constructor and by adding it to the world and list of shot bullets
-	 * TODO
+	 * Removes the bullet from the set of "alive" bullets
+	 * @param bullet
+	 * 			The bullet to be removed
+	 * @post the bullet is no longer in the set of alive bullets
+	 *		| alliveBullets.contains(bullet) == false
+	 * @throws IllegalArgumentException
+	 * 			The set of alive bullets does not contain this bullet
+	 * 		| !alliveBullets.contains(bullet)
 	 */
 	public void bulletDies(Bullet bullet) throws IllegalArgumentException{
 		if (!aliveBullets.contains(bullet)) throw new IllegalArgumentException();
@@ -321,13 +333,18 @@ public class Ship extends Flying implements IShip {
 	}
 
 	/**
-	 * TODO
+	 * Adds this ship to a game world
+	 * @param world
+	 * 			Defines which world the ship is added to
+	 * @post this.getWorld() == world
+	 * @throws IllegalStateException
+	 * 			The ship is already assigned to a world
+	 * 		| !this.isAvailableToAdd()
 	 */
 	@Override
 	public void addToWorld(World world) {
 		if(! this.isAvailableToAdd()) throw new IllegalStateException();
 		world.add(this);
-		this.setWorld(world);
 	}
 
 	/**
@@ -371,7 +388,7 @@ public class Ship extends Flying implements IShip {
 	
 	/**
 	 * Checks if a given asteroid is colliding with the ship
-	 * @param bullet
+	 * @param asteroid
 	 * 		The asteroid to check collision with
 	 * TODO
 	 */
@@ -392,8 +409,11 @@ public class Ship extends Flying implements IShip {
 	}
 
 	/**
-	 * Destroys the current ship
-	 * TODO
+	 * Destroys the current ship by removing all references
+	 * @post The world no longer contains the ship
+	 * 		| !this.getWorld().contains(this)
+	 * @post The ship no longer belongs to the world
+	 * 		| this.getWorld == null
 	 */
 	@Override
 	public void die() {

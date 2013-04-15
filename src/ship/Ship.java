@@ -311,6 +311,14 @@ public class Ship extends Flying implements IShip {
 		
 	}
 
+	@Override
+	public void die() {
+		// remove all links to world
+		this.getWorld().remove(this);
+		this.setWorld(null);
+		
+	}
+
 	
 	
 }

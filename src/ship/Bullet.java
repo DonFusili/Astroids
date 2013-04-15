@@ -77,7 +77,33 @@ public class Bullet extends Flying{
 		
 	}
 	
+	private boolean ticked;
 	
+	@Override
+	protected void collideWithBoundary(){
+		boolean invertx = false;
+		boolean inverty = false;
+		double newx = this.getXSpeed();
+		double newy = this.getYSpeed();
+		double radius = this.getRadius();
+		if(newx > 0 &&((this.getXCoordinate() + radius) >= this.getWorld().getWidth())) invertx = true;
+		if(newx < 0 &&((this.getXCoordinate() - radius) <= (-1 * this.getWorld().getWidth()))) invertx = true;
+		if(newy > 0 && ((this.getYCoordinate() + radius) >= this.getWorld().getHeight())) inverty = true;
+		if(newy < 0 && ((this.getYCoordinate() - radius) <= (-1 * this.getWorld().getHeight()))) inverty = true;
+		if(invertx || inverty){
+			if(ticked) {die(); return;}
+			ticked = true;
+			if(invertx) newx = -1 * newx;
+			if(inverty) newy = -1 * newy;
+			this.setSpeeds(new Vector(newx, newy));
+			this.getWorld().recalibrate(this);
+		}
+	}
+
+	@Override
+	public void die() {
+		this.terminate();
+	}
 
 
 }

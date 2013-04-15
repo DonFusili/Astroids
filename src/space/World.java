@@ -71,14 +71,14 @@ public class World {
 		if(!isValidShipToAdd(ship)) throw new IllegalArgumentException();
 		ship.setWorld(this);
 		ships.add(ship);		
-		recallibrate(ship);
+		recalibrate(ship);
 	}
 	
 	public void add(Asteroid asteroid) throws IllegalArgumentException {
 		if(!isValidAsteroidToAdd(asteroid)) throw new IllegalArgumentException();
 		asteroid.setWorld(this);
 		asteroids.add(asteroid);
-		recallibrate(asteroid);
+		recalibrate(asteroid);
 	}
 	
 	public static boolean isValidShipToAdd(Ship ship){
@@ -107,33 +107,52 @@ public class World {
 		if(!this.asteroids.contains(asteroid)) return;
 		asteroid.setWorld(null);
 		this.asteroids.remove(asteroid);
+		if(!(collisions.get(asteroid) == null)) {
+			Collision collision = collisions.get(asteroid);
+			collisions.remove(collision.getFlying1());
+			collisions.remove(collision.getFlying2());
+			collisionsorder.remove(collision);
+		}
 	}
 	
 	public void remove(Ship ship){
 		if(!this.ships.contains(ship)) return;
 		ship.setWorld(null);
 		this.ships.remove(ship);
+		if(!(collisions.get(ship) == null)) {
+			Collision collision = collisions.get(ship);
+			collisions.remove(collision.getFlying1());
+			collisions.remove(collision.getFlying2());
+			collisionsorder.remove(collision);
+		}
 	}
 	
 	public void remove(Bullet bullet){
 		if(!this.bullets.contains(bullet) || !(bullet.getWorld() == null)) return;
 		this.bullets.remove(bullet);
+		if(!(collisions.get(bullet) == null)) {
+			Collision collision = collisions.get(bullet);
+			collisions.remove(collision.getFlying1());
+			collisions.remove(collision.getFlying2());
+			collisionsorder.remove(collision);
+		}
 	}
 
 	public void shoot(Ship ship, Bullet shotbullet) throws IllegalArgumentException {
 		if(!ships.contains(ship)) throw new IllegalArgumentException();
 		shotbullet.setWorld(this);
 		bullets.add(shotbullet);
-		recallibrate(shotbullet);
+		recalibrate(shotbullet);
 	}
 	
-	private void recallibrate(Flying flying){
+	public void recalibrate(Flying flying){
 		Collision collision1 = null;
 		double t = -1;
 		double wouldcollidebefore = -1;
-		try{
-		wouldcollidebefore = collisions.get(flying).getDelay();
-		} catch(NullPointerException e){
+		if(!(collisions.get(flying) == null)){
+			wouldcollidebefore = collisions.get(flying).getDelay();
+		} 
+		else{
 			wouldcollidebefore = Double.MAX_VALUE;
 		}
 		for(Ship flying2 : ships){
@@ -141,8 +160,10 @@ public class World {
 				t = Flying.getTimeToCollision(flying, flying2);
 				if(!(t == Double.POSITIVE_INFINITY) && t < wouldcollidebefore &&  (collisions.get(flying2) == null || t < collisions.get(flying2).getDelay())){
 					wouldcollidebefore = t;
-					try{ collisionsorder.remove(collisions.get(flying)); } catch(NullPointerException e) {};
-					try{ collisionsorder.remove(collisions.get(flying2)); } catch(NullPointerException e) {};
+					if(!(collisions.get(flying) == null)) {collisionsorder.remove(collisions.get(flying)); }
+					// try{ collisionsorder.remove(collisions.get(flying)); } catch(NullPointerException e) {};
+					if(!(collisions.get(flying2) == null)) {collisionsorder.remove(collisions.get(flying2)); }
+					// try{ collisionsorder.remove(collisions.get(flying2)); } catch(NullPointerException e) {};
 					collision1 = new Collision(flying, flying2, t);
 					collisions.put(flying2, collision1);
 				}
@@ -153,8 +174,10 @@ public class World {
 				t = Flying.getTimeToCollision(flying, flying2);
 				if(!(t == Double.POSITIVE_INFINITY) && t < wouldcollidebefore &&  (collisions.get(flying2) == null || t < collisions.get(flying2).getDelay())){
 					wouldcollidebefore = t;
-					try{ collisionsorder.remove(collisions.get(flying)); } catch(NullPointerException e) {};
-					try{ collisionsorder.remove(collisions.get(flying2)); } catch(NullPointerException e) {};
+					if(!(collisions.get(flying) == null)) {collisionsorder.remove(collisions.get(flying)); }
+					// try{ collisionsorder.remove(collisions.get(flying)); } catch(NullPointerException e) {};
+					if(!(collisions.get(flying2) == null)) {collisionsorder.remove(collisions.get(flying2)); }
+					// try{ collisionsorder.remove(collisions.get(flying2)); } catch(NullPointerException e) {};
 					collision1 = new Collision(flying, flying2, t);
 					collisions.put(flying2, collision1);
 				}
@@ -165,8 +188,10 @@ public class World {
 				t = Flying.getTimeToCollision(flying, flying2);
 				if(!(t == Double.POSITIVE_INFINITY) && t < wouldcollidebefore &&  (collisions.get(flying2) == null || t < collisions.get(flying2).getDelay())){
 					wouldcollidebefore = t;
-					try{ collisionsorder.remove(collisions.get(flying)); } catch(NullPointerException e) {};
-					try{ collisionsorder.remove(collisions.get(flying2)); } catch(NullPointerException e) {};
+					if(!(collisions.get(flying) == null)) {collisionsorder.remove(collisions.get(flying)); }
+					// try{ collisionsorder.remove(collisions.get(flying)); } catch(NullPointerException e) {};
+					if(!(collisions.get(flying2) == null)) {collisionsorder.remove(collisions.get(flying2)); }
+					// try{ collisionsorder.remove(collisions.get(flying2)); } catch(NullPointerException e) {};
 					collision1 = new Collision(flying, flying2, t);
 					collisions.put(flying2, collision1);
 				}
@@ -191,40 +216,40 @@ public class World {
 		Collision nextCollision = null;
 		double nextcollisiontime = Double.MAX_VALUE;
 		Collision collisionToHandle = null;
-		try{
+		if(!collisionsorder.isEmpty()){
 			nextCollision = collisionsorder.first();
 			nextcollisiontime = nextCollision.getDelay();
-			collisionToHandle = null;
 		}
-		catch(NoSuchElementException e){
+		else{
 			skipcol = true;
 		}
-		while(!skipcol && (Util.fuzzyLessThanOrEqualTo(nextcollisiontime, dtt) || Util.fuzzyLessThanOrEqualTo(nextcollisiontime, 0))){
+		while(!(skipcol) && (Util.fuzzyLessThanOrEqualTo(nextcollisiontime, dtt) || Util.fuzzyLessThanOrEqualTo(nextcollisiontime, 0))){
+			System.out.println("nextcollisiontime " + nextcollisiontime + " dtt " + dtt);
 			collisionToHandle = nextCollision;
 			evolvewithoutcollisions(nextcollisiontime, false);
 			handleCollision(collisionToHandle);
-			collisionsorder.remove(collisionToHandle);
 			dtt -= nextcollisiontime;
-			try{
+			if(!collisionsorder.isEmpty()){
 				nextCollision = collisionsorder.first();
 				nextcollisiontime = nextCollision.getDelay();
 			}
-			catch(NoSuchElementException e){
+			else{
 				skipcol = true;
 			}
-			
 		}
-
+		if(!collisionsorder.isEmpty()) System.out.println("nextcollisiontimeafterwhile " + collisionsorder.first().getDelay() + " nextline shouldbe: " + (collisionsorder.first().getDelay() - dtt));
 		evolvewithoutcollisions(dtt, true);
 	}
 	
 	private void handleCollision(Collision collision){
 		Flying flying1 = collision.getFlying1();
 		Flying flying2 = collision.getFlying2();
-		if(flying2 == null) { flying1.collideWithBoundary(); recallibrate(flying1); return;}
 		Flying.collide(flying1, flying2);
-		recallibrate(flying2);
-		recallibrate(flying1);
+		collisionsorder.remove(collision);
+		collisions.remove(flying1);
+		collisions.remove(flying2);
+		recalibrate(flying2);
+		recalibrate(flying1);
 	}
 	
 	private void evolvewithoutcollisions(double dt, boolean thrustingenabled){
@@ -243,16 +268,16 @@ public class World {
 			for(Ship ship : ships){
 				if(ship.isThrusterActive()){
 					ship.thrust(ship.getAcceleration());
-					recallibrate(ship);
+					recalibrate(ship);
 				}
 			}
 		}
 		for(Collision toadjust : collisionsorder){
 			toadjust.shortenDelayWith(dtt);
 		}
-		for(Collision toadjust : collisions.values()){
-			toadjust.shortenDelayWith(dtt);
-		}
+//		for(Collision toadjust : collisions.values()){
+//			toadjust.shortenDelayWith(dtt);
+//		}
 	}
 	
 	

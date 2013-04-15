@@ -590,10 +590,10 @@ public abstract class Flying {
 	
 	private void collideWith(Flying flying){
 		switch(flying.getFlyertype()) {
-		case SHIP: this.collideWithShip((Ship)flying); break;
-		case ASTEROID : this.collideWithAsteroid((Asteroid)flying); break;
-		case BULLET : this.collideWithBullet((Bullet) flying); break;
-		default : assert false;
+			case SHIP: this.collideWithShip((Ship)flying); break;
+			case ASTEROID : this.collideWithAsteroid((Asteroid)flying); break;
+			case BULLET : this.collideWithBullet((Bullet) flying); break;
+			default : assert false;
 		}
 	}
 	
@@ -603,7 +603,7 @@ public abstract class Flying {
 	
 	protected abstract void collideWithAsteroid(Asteroid asteroid);
 	
-	public void collideWithBoundary(){
+	protected void collideWithBoundary(){
 		boolean invertx = false;
 		boolean inverty = false;
 		double newx = this.getXSpeed();
@@ -617,15 +617,28 @@ public abstract class Flying {
 			if(invertx) newx = -1 * newx;
 			if(inverty) newy = -1 * newy;
 			this.setSpeeds(new Vector(newx, newy));
+			this.getWorld().recalibrate(this);
 		}
 	}
 	
+	public static double collisions;
+	
 	public static void collide(Flying flying1, Flying flying2){
+		collisions ++;
+		System.out.println("collision " + collisions + " " + flying1.getFlyertype() + " " + flying2.getFlyertype());
 		flying1.collideWith(flying2);
 		flying2.collideWith(flying1);
 	}
 	
 	protected abstract void terminate();
+	
+	public abstract void die();
+	
+	private boolean dead = false;
+	
+	public boolean isDead(){
+		return dead;
+	}
 
 	
 }

@@ -86,4 +86,10 @@ public class Asteroid extends Flying {
 		
 	}
 
+	@Override
+	public void die() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

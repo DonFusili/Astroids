@@ -9,6 +9,7 @@ public class Collision implements Comparable<Collision> {
 		if(Util.fuzzyLessThanOrEqualTo(delay, 0));
 		this.flying1 = flying1;
 		this.flying2 = flying2;
+		this.delay = delay;
 	}
 
 	@Override
@@ -32,7 +33,7 @@ public class Collision implements Comparable<Collision> {
 	}
 	
 	public void shortenDelayWith(double dt){
-		this.delay -= dt;
+		this.delay = this.delay - dt;
 	}
 	
 	public Flying getFlying1(){

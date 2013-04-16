@@ -308,16 +308,14 @@ public class Ship extends Flying implements IShip {
 
 	@Override
 	protected void terminate() {
-		// TODO Auto-generated method stub
-		
+		// remove all links to world
+		this.getWorld().remove(this);
+		this.setWorld(null);
 	}
 
 	@Override
 	public void die() {
-		// remove all links to world
-		this.getWorld().remove(this);
-		this.setWorld(null);
-		
+		this.terminate();
 	}
 
 	

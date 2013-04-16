@@ -593,6 +593,7 @@ public abstract class Flying {
 			case SHIP: this.collideWithShip((Ship)flying); break;
 			case ASTEROID : this.collideWithAsteroid((Asteroid)flying); break;
 			case BULLET : this.collideWithBullet((Bullet) flying); break;
+			// If you reach the default case, you've not extended the program correctly.
 			default : assert false;
 		}
 	}
@@ -603,7 +604,7 @@ public abstract class Flying {
 	
 	protected abstract void collideWithAsteroid(Asteroid asteroid);
 	
-	protected void collideWithBoundary(){
+	protected void collideWithBoundary() throws NullPointerException{
 		boolean invertx = false;
 		boolean inverty = false;
 		double newx = this.getXSpeed();

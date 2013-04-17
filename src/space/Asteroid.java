@@ -60,7 +60,7 @@ public class Asteroid extends Flying {
 
 	@Override
 	protected void collideWithShip(Ship ship) {
-		//Nothing happens.
+		//Nothing happens
 		return;
 	}
 
@@ -71,7 +71,7 @@ public class Asteroid extends Flying {
 
 	@Override
 	protected void collideWithAsteroid(Asteroid asteroid) {
-		this.die();
+		this.bounceOf(asteroid);
 	}
 
 
@@ -89,8 +89,8 @@ public class Asteroid extends Flying {
 			double angle = 0;
 			double angle2 = Math.PI;
 			try{
-				angle = this.getRandom().nextDouble()*2*Math.PI;
-				angle2 = Math.PI - angle;
+				angle = this.getRandom().nextDouble()*Math.PI;
+				angle2 = Math.PI + angle;
 			}
 			catch(NullPointerException e){ System.out.println("not randomized");}
 			if(angle2 < 0) angle2 += 2*Math.PI;
@@ -112,6 +112,7 @@ public class Asteroid extends Flying {
 			this.getWorld().add(kid2);
 		}
 		this.terminate();
+		this.dead = true;
 	}
 	
 	@Basic

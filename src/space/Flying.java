@@ -629,10 +629,21 @@ public abstract class Flying {
 	
 	public abstract void die();
 	
-	private boolean dead = false;
+	protected boolean dead = false;
 	
 	public boolean isDead(){
 		return dead;
+	}
+	
+	protected void bounceOf(Flying flying) throws IllegalArgumentException, NullPointerException{
+		if(flying == null) throw new NullPointerException();
+		if(!(flying.getFlyertype() == Flyer.ASTEROID || flying.getFlyertype() == Flyer.SHIP)) throw new IllegalArgumentException();
+		double J = 2 * this.getMass() * flying.getMass() * 
+					Vector.dotProduct(Vector.difference(this.getSpeeds(), flying.getSpeeds()), Vector.difference(this.getCoordinates(), flying.getCoordinates()))
+				/ (this.getRadius() * (this.getMass() + flying.getMass()));
+		double Jx = J * (this.getXCoordinate() - flying.getXCoordinate());
+		double Jy = J * (this.getYCoordinate() - flying.getYCoordinate());
+		this.setSpeeds(new Vector(this.getXSpeed() - Jx/this.getMass(), this.getYSpeed() - Jy/this.getMass()));
 	}
 
 	

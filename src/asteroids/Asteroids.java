@@ -148,7 +148,7 @@ public class Asteroids<World, Ship, Asteroid, Bullet> extends JFrame {
       asteroids = new Asteroids<space.World, ship.Ship, space.Asteroid, ship.Bullet>(facade, dimensions.width, dimensions.height, true, sound);
       screen.setFullScreenWindow(asteroids);
     } else {
-      asteroids = new Asteroids<space.World, ship.Ship, space.Asteroid, ship.Bullet>(facade, 1024, 768, false, sound);
+      asteroids = new Asteroids<space.World, ship.Ship, space.Asteroid, ship.Bullet>(facade, 1366, 768, false, sound);
     }
     asteroids.start();
   }

@@ -1,5 +1,6 @@
 package space;
 
+import be.kuleuven.cs.som.annotate.*;
 import extraUtil.Util;
 
 public class Collision implements Comparable<Collision> {
@@ -36,10 +37,14 @@ public class Collision implements Comparable<Collision> {
 		this.delay = this.delay - dt;
 	}
 	
+	@Immutable
+	@Basic
 	public Flying getFlying1(){
 		return this.flying1;
 	}
 	
+	@Immutable
+	@Basic
 	public Flying getFlying2(){
 		return this.flying2;
 	}

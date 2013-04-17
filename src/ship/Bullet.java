@@ -5,7 +5,7 @@ import be.kuleuven.cs.som.annotate.*;
 import space.*;
 
 /**
- * comment!
+ * TODO:comment!
  * @version 1.0
  * @author Joost Verplancke
  *
@@ -101,6 +101,7 @@ public class Bullet extends Flying{
 	@Override
 	public void die() {
 		this.terminate();
+		this.dead = true;
 	}
 
 

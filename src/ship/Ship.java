@@ -280,7 +280,7 @@ public class Ship extends Flying implements IShip {
 	private final double engineThrustForce = WORKABLE_THRUSTFORCE;
 	
 	public final static double STANDARD_THRUSTER_THRUSTFORCE = 1.1e8;
-	public final static double WORKABLE_THRUSTFORCE = 3100000000000000.0;
+	public final static double WORKABLE_THRUSTFORCE = 9000000000000000.0;
 	
 	/**
 	 * 	Method for returning the acceleration, calculated by dividing the thrust force with the mass of the ship 
@@ -352,8 +352,7 @@ public class Ship extends Flying implements IShip {
 	 */
 	@Override
 	protected void collideWithShip(Ship ship) {
-		// TODO Auto-generated method stub
-		
+		this.bounceOf(ship);
 	}
 	
 	/**
@@ -397,6 +396,7 @@ public class Ship extends Flying implements IShip {
 	@Override
 	public void die() {
 		this.terminate();
+		this.dead = true;
 	}
 
 	

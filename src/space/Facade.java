@@ -26,8 +26,10 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 	public final static String NA = "This exception should never be thrown";
 
 	public Facade() {
-
+		random = new Random();
 	}
+	
+	private Random random;
 
 
 
@@ -543,17 +545,6 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 
 
 
-	@Override
-	public Asteroid createAsteroid(double x, double y, double xVelocity,
-			double yVelocity, double radius) throws ModelException {
-		try{
-			return new Asteroid(radius, x, y, xVelocity, yVelocity);
-		}
-		catch(Exception e){
-			throw new ModelException(e);
-		}
-	}
-
 
 
 	@Override
@@ -617,6 +608,14 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 		catch(Exception e){
 			throw new ModelException(e);
 		}
+	}
+
+
+
+	@Override
+	public Asteroid createAsteroid(double x, double y, double xVelocity,
+			double yVelocity, double radius) {
+		return createAsteroid(x, y, xVelocity, yVelocity, radius, this.random);
 	}
 
 }

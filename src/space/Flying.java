@@ -252,7 +252,7 @@ public abstract class Flying {
 	 * @return sqrt(this.getXSpeed()**2 + this.getYSpeed()**2)
 	 */
 	public double getSpeed() {
-		return Vector.dotProduct(speeds, speeds);
+		return Math.sqrt(Vector.dotProduct(speeds, speeds));
 	}
 
 	/**This method is used to change the total speed of the ship to the maximum speed but retain the same direction of movement.
@@ -532,12 +532,6 @@ public abstract class Flying {
 					double syc = flying.getYCoordinate() + time * flying.getYSpeed();
 					double tr = this.getRadius();
 					double sr = flying.getRadius();
-			//		double coordX = ship.getXCoordinate() + (time * ship.getXSpeed()) - this.getXCoordinate() + (time * this.getXSpeed());
-			//		double coordY = ship.getYCoordinate() + (time * ship.getYSpeed()) - this.getYCoordinate() + (time * this.getYSpeed());
-			//		double offsetX = ship.getRadius() * (coordX/(ship.getRadius()+this.getRadius()));
-			//		double offsetY = ship.getRadius() * (coordY/(ship.getRadius()+this.getRadius()));
-			//		double[] coord = {ship.getXCoordinate() + offsetX,ship.getYCoordinate() + offsetY};
-			//		return coord;
 					if(txc == sxc){
 						result[0] = txc;
 						if(tyc > syc){
@@ -580,13 +574,13 @@ public abstract class Flying {
 		
 	}
 
-	private Flyer getFlyertype() {
+	public Flyer getFlyertype() {
 		return flyertype;
 	}
 	
 	private final Flyer flyertype;
 	
-	protected enum Flyer { SHIP, ASTEROID, BULLET }
+	public enum Flyer { SHIP, ASTEROID, BULLET }
 	
 	private void collideWith(Flying flying){
 		switch(flying.getFlyertype()) {

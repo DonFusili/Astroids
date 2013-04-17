@@ -18,32 +18,29 @@ import extraUtil.*;
  */
 public class Asteroid extends Flying {
 
-	public Asteroid(double radius) {
-		this(radius, 0, 0, 0, 0);
-		childsangle = 0;
-	}
 	
 	public Asteroid(double radius, Vector coordinates, Vector speeds){
 		super(radius, coordinates, speeds, Flyer.ASTEROID);
-		childsangle = 0;
+		this.random = null;
 	}
 	
 	public Asteroid(double radius, double xpos, double ypos, double xspeed, double yspeed){
 		super(radius, new Vector(xpos, ypos), new Vector(xspeed, yspeed), Flyer.ASTEROID);
-		childsangle = 0;
+		this.random = null;
 	}
 	
 	public Asteroid(double radius, double xpos, double ypos, double xspeed, double yspeed, Random random){
 		this(radius, xpos, ypos, xspeed, yspeed);
-		this.childsangle = random.nextDouble() * 2 * Math.PI;
+		this.random = random;
 	}
 	
-	private double childsangle;
-	
-	@Basic
-	public double getChildsangle(){
-		return childsangle;
+	public Asteroid(double radius, Vector coordinates, Vector speeds, Random random){
+		super(radius, coordinates, speeds, Flyer.ASTEROID);
+		this.random = random;
 	}
+	
+	private Random random;
+	
 	
 	public double getMass() {
 		return this.getSphericalMass();
@@ -63,32 +60,63 @@ public class Asteroid extends Flying {
 
 	@Override
 	protected void collideWithShip(Ship ship) {
-		// TODO Auto-generated method stub
-		
+		//Nothing happens.
+		return;
 	}
 
 	@Override
 	protected void collideWithBullet(Bullet bullet) {
-		// TODO Auto-generated method stub
-		
+		this.die();
 	}
 
 	@Override
 	protected void collideWithAsteroid(Asteroid asteroid) {
-		// TODO Auto-generated method stub
-		
+		this.die();
 	}
 
 
 	@Override
 	protected void terminate() {
-		// TODO Auto-generated method stub
-		
+		this.getWorld().remove(this);
 	}
 
 	@Override
 	public void die() {
+		if(this.getRadius() >= 30){
+			Asteroid kid1 = null;
+			Asteroid kid2 = null;
+			double speed = 1.5*this.getSpeed();
+			double angle = 0;
+			double angle2 = Math.PI;
+			try{
+				angle = this.getRandom().nextDouble()*2*Math.PI;
+				angle2 = Math.PI - angle;
+			}
+			catch(NullPointerException e){ System.out.println("not randomized");}
+			if(angle2 < 0) angle2 += 2*Math.PI;
+			Vector coordinates = Vector.add(this.getCoordinates(), new Vector(angle, this.getRadius()/2, this.getRadius()));
+			Vector coordinates2 = Vector.add(this.getCoordinates(), new Vector(angle2, this.getRadius()/2, this.getRadius()));
+			Vector speeds = null;
+			Vector speeds2 = null;
+			try{
+				speeds = new Vector(angle, speed, World.LIGHTSPEED);
+				speeds2 = new Vector(angle2, speed, World.LIGHTSPEED);
+			}
+			catch(IllegalArgumentException e){
+				speeds = new Vector(angle, World.LIGHTSPEED, World.LIGHTSPEED);
+				speeds2 = new Vector(angle2, World.LIGHTSPEED, World.LIGHTSPEED);
+			}
+			kid1 = new Asteroid(this.getRadius()/2, coordinates, speeds, this.getRandom());
+			kid2 = new Asteroid(this.getRadius()/2, coordinates2, speeds2, this.getRandom());
+			this.getWorld().add(kid1);
+			this.getWorld().add(kid2);
+		}
 		this.terminate();
+	}
+	
+	@Basic
+	public Random getRandom(){
+		return this.random;
 	}
 
 }

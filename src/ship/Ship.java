@@ -280,7 +280,7 @@ public class Ship extends Flying implements IShip {
 	private final double engineThrustForce = WORKABLE_THRUSTFORCE;
 	
 	public final static double STANDARD_THRUSTER_THRUSTFORCE = 1.1e8;
-	public final static double WORKABLE_THRUSTFORCE = 3.1e15;
+	public final static double WORKABLE_THRUSTFORCE = 3100000000000000.0;
 	
 	/**
 	 * 	Method for returning the acceleration, calculated by dividing the thrust force with the mass of the ship 
@@ -303,24 +303,6 @@ public class Ship extends Flying implements IShip {
 	public void fireBullet() {
 		Bullet shotbullet = new Bullet(this, 3, 250);
 		this.getWorld().shoot(this, shotbullet);
-		aliveBullets.add(shotbullet);
-	}
-	
-	private Set<Bullet> aliveBullets = new HashSet<Bullet>();
-	
-	/**
-	 * Removes the bullet from the set of "alive" bullets
-	 * @param bullet
-	 * 			The bullet to be removed
-	 * @post the bullet is no longer in the set of alive bullets
-	 *		| alliveBullets.contains(bullet) == false
-	 * @throws IllegalArgumentException
-	 * 			The set of alive bullets does not contain this bullet
-	 * 		| !alliveBullets.contains(bullet)
-	 */
-	public void bulletDies(Bullet bullet) throws IllegalArgumentException{
-		if (!aliveBullets.contains(bullet)) throw new IllegalArgumentException();
-		aliveBullets.remove(bullet);
 	}
 	
 	/**
@@ -382,8 +364,13 @@ public class Ship extends Flying implements IShip {
 	 */
 	@Override
 	protected void collideWithBullet(Bullet bullet) {
-		// TODO Auto-generated method stub
-		
+		if(bullet.getShooter() !=this){
+			System.out.println("collided with bullet, not one of own bullets");
+			this.die();
+		}
+		else{
+			System.out.println("collided with bullet, one of own bullets");
+		}
 	}
 	
 	/**
@@ -394,27 +381,18 @@ public class Ship extends Flying implements IShip {
 	 */
 	@Override
 	protected void collideWithAsteroid(Asteroid asteroid) {
-		// TODO Auto-generated method stub
-		
+		this.die();
 	}
 
-	/**
-	 * Checks if the ship is colliding with the boundary of the world
-	 * TODO
-	 */
 	@Override
 	protected void terminate() {
 		// remove all links to world
 		this.getWorld().remove(this);
-		this.setWorld(null);
 	}
 
 	/**
-	 * Destroys the current ship by removing all references
-	 * @post The world no longer contains the ship
-	 * 		| !this.getWorld().contains(this)
-	 * @post The ship no longer belongs to the world
-	 * 		| this.getWorld == null
+	 * Let the ship die by terminating it
+	 * @effect this.terminate()
 	 */
 	@Override
 	public void die() {

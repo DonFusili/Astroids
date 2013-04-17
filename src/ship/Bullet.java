@@ -54,27 +54,23 @@ public class Bullet extends Flying{
 
 	@Override
 	protected void collideWithShip(Ship ship) {
-		// TODO Deevid
-		
+		this.die();
 	}
 
 	@Override
 	protected void collideWithBullet(Bullet bullet) {
-		// TODO Deevid
-		
+		this.die();
 	}
 
 	@Override
 	protected void collideWithAsteroid(Asteroid asteroid) {
-		// TODO Deevid
-		
+		this.die();
 	}
 
 
 	@Override
 	protected void terminate() {
-		// TODO Deevid
-		
+		this.getWorld().remove(this);
 	}
 	
 	private boolean ticked;

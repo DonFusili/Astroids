@@ -559,7 +559,12 @@ public class Facade implements IFacade<World, Ship, Asteroid, Bullet> {
 	@Override
 	public Asteroid createAsteroid(double x, double y, double xVelocity,
 			double yVelocity, double radius, Random random) throws ModelException {
-		return null;
+		try{
+			return new Asteroid(radius,x,y,xVelocity,yVelocity,random);
+		}
+		catch(Exception e){
+			throw new ModelException(e);
+		}
 	}
 
 

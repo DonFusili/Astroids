@@ -42,7 +42,7 @@ public class Ship extends Flying implements IShip {
 	 * @param angle
 	 * 			The starting angle/orientation of the ship
 	 * @throws IllegalArgumentException
-	 * TODO
+	 * TODO gewoon @effect this(XPosition, YPosition, XSpeed, YSpeed, radius, angle, null, mass) ?
 	 * 			|We throw an exception if either the radius, one of the coordinates, one of the speed
 	 * 				components, the angle or the mass does not satisfy our conditions, e.g. the radius has to be a defined double
 	 * 				bigger than the lower bound of the radius
@@ -53,7 +53,7 @@ public class Ship extends Flying implements IShip {
 
 	
 	/**
-	 * TODO
+	 * TODO not sure if this is right
 	 * Constructor for ship, defines the position, speed, radius, angle/orientation, world and mass of the ship.
 	 * @param XPosition
 	 * 			The starting horizontal position
@@ -288,7 +288,7 @@ public class Ship extends Flying implements IShip {
 	 * @effect Creates a bullet
 	 * 		| Bullet(this, 3, 250)
 	 * @effect Adds the bullet to the world of the ship
-	 * 		| TODO
+	 * 		| TODO effect?post?
 	 * @post Adds the bullet to the hashset of alive bullets
 	 * 		| aliveBullets.contains(shotbullet)
 	 * 
@@ -338,7 +338,7 @@ public class Ship extends Flying implements IShip {
 	
 
 	/**
-	 * Checks if another ship is colliding with this one
+	 * Ships colliding bounce off each other
 	 * @param ship
 	 * 		The other ship to check collision with
 	 * TODO
@@ -349,10 +349,12 @@ public class Ship extends Flying implements IShip {
 	}
 	
 	/**
-	 * Checks if a given bullet is colliding with the ship
+	 * A ship is only destroyed by a bullet if it is not his own
 	 * @param bullet
 	 * 		The bullet to check collision with
-	 * TODO
+	 * @effect If it is a bullet shot by another ship, the ship dies
+	 * 		| if(bullet.getShooter() !=this)
+	 * 		| then this.getWorld().remove(this)
 	 */
 	@Override
 	protected void collideWithBullet(Bullet bullet) {
@@ -366,16 +368,22 @@ public class Ship extends Flying implements IShip {
 	}
 	
 	/**
-	 * Checks if a given asteroid is colliding with the ship
+	 * Handles a collision with an asteroid by killing the ship
 	 * @param asteroid
 	 * 		The asteroid to check collision with
-	 * TODO
+	 * @effect The ship dies
+	 * 		| this.getWorld().remove(this)
 	 */
 	@Override
 	protected void collideWithAsteroid(Asteroid asteroid) {
 		this.die();
 	}
 
+	/**
+	 * Terminates the ship by removing it from the world
+	 * @effect Removes the ship from the world
+	 * 		| this.getWorld().remove(this)
+	 */
 	@Override
 	protected void terminate() {
 		// remove all links to world

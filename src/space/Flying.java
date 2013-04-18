@@ -26,10 +26,24 @@ import extraUtil.*;
  */
 public abstract class Flying {
 	
+	/**
+	 * TODO: Comment
+	 * @param radius
+	 * @param flyertype
+	 * @throws IllegalArgumentException
+	 */
 	protected Flying(double radius, Flyer flyertype) throws IllegalArgumentException{
 		this(radius, new Vector(0, 0), new Vector(0, 0), flyertype);
 	}
 	
+	/**
+	 * TODO: Comment
+	 * @param radius
+	 * @param coordinates
+	 * @param speeds
+	 * @param flyertype
+	 * @throws IllegalArgumentException
+	 */
 	protected Flying(double radius, Vector coordinates, Vector speeds, Flyer flyertype) throws IllegalArgumentException{
 		if(!isValidRadius(radius)) throw new IllegalArgumentException();
 		this.radius = radius;
@@ -38,10 +52,25 @@ public abstract class Flying {
 		this.flyertype = flyertype;
 	}
 	
+	/**
+	 * TODO: Comment
+	 * @param radius
+	 * @param XPos
+	 * @param YPos
+	 * @param XSpeed
+	 * @param YSpeed
+	 * @param flyertype
+	 * @throws IllegalArgumentException
+	 */
 	protected Flying(double radius, double XPos, double YPos, double XSpeed, double YSpeed, Flyer flyertype) throws IllegalArgumentException{
 		this(radius, new Vector(XPos, YPos), new Vector(XSpeed, YSpeed), flyertype);
 	}
 	
+	/**
+	 * Returns true if the radius is bigger than 0
+	 * @param radius
+	 * @return radius >= 0
+	 */
 	public static boolean isValidRadius(double radius){
 		return radius >= 0;
 	}
@@ -120,6 +149,11 @@ public abstract class Flying {
 				return flying1.getCollisionPosition(flying2);
 			}
 
+	/**
+	 * TODO does this do anything useful?
+	 * @param world
+	 * @return
+	 */
 	public static boolean isValidWorld(World world) {
 		return true;
 	}
@@ -340,8 +374,11 @@ public abstract class Flying {
 	}
 	
 	/**
-	 * TODO: comment
+	 * Sets the speed of a flying object
 	 * @param vec
+	 * @post
+	 * 		| if(Math.sqrt(vec.getX()*vec.getX() + vec.getY() * vec.getY()) <= getMaxSpeed())
+	 * 		| then this.getSpeeds = vec
 	 */
 	public void setSpeeds(Vector vec){
 		if(isValidSpeed(vec.getX(), vec.getY())) this.speeds = vec;
@@ -349,9 +386,10 @@ public abstract class Flying {
 	
 	
 	/**
-	 * TODO: comment
+	 * Checks if the coordinate vector is valid
 	 * @param vec
-	 * @return
+	 * @return 
+	 * 		| result == !(vec == null) && !Double.isNaN(vec.getX()) && !Double.isNaN(vec.getY())
 	 */
 	public static boolean isValidCoordinates(Vector vec){
 		return !(vec == null) && !Double.isNaN(vec.getX()) && !Double.isNaN(vec.getY());
@@ -411,10 +449,13 @@ public abstract class Flying {
 	}
 	
 	/**
-	 * TODO: comment!
+	 * Checks if 2 objects are overlapping 
 	 * @param flying1
 	 * @param flying2
+	 * @throws NullPointerException
+	 * 			| fying1 == null
 	 * @return
+	 * 		|result == Util.fuzzyLessThanOrEqualTo(flying1.getDistanceBetween(flying2), 0)
 	 */
 	public static boolean overlap(Flying flying1, Flying flying2){
 		if(flying1 == null) throw new NullPointerException();
@@ -422,8 +463,8 @@ public abstract class Flying {
 	}
 
 	/**
-	 * Quick check if 2 ships are moving towards each other using basic vector calculus
-	 * @param ship
+	 * Quick check if 2 objects are moving towards each other using basic vector calculus
+	 * @param flying
 	 * @return we multiply the delta_speed and delta_coordinate vectors and check if the result is smaller than 0, if it is, the ships are
 	 * 			moving towards each other, if it isn't, they aren't.
 	 * 			| result = ((ship.getXCoordinate()- this.getXCoordinate()) * (ship.getXSpeed() - this.getXSpeed())) + 
@@ -433,6 +474,15 @@ public abstract class Flying {
 		return Vector.dotProduct(Vector.difference(this.getSpeeds(), flying.getSpeeds()), Vector.difference(this.getCoordinates(), flying.getCoordinates())) < 0;
 	}
 	
+	/**
+	 * Quick check if 2 objects are moving towards each other using basic vector calculus
+	 * @param one
+	 * @param two 
+	 * @return we multiply the delta_speed and delta_coordinate vectors and check if the result is smaller than 0, if it is, the ships are
+	 * 			moving towards each other, if it isn't, they aren't.
+	 * 			| result = ((two.getXCoordinate()- one.getXCoordinate()) * (two.getXSpeed() - one.getXSpeed())) + 
+				((two.getYCoordinate() - one.getYCoordinate()) * (two.getYSpeed() - one.getYSpeed())) < 0
+	 */
 	public static boolean MovingTowardsEachOther(Flying one, Flying two){
 		if(one == null || two == null) throw new NullPointerException();
 		return Vector.square(Vector.difference(one.getSpeeds(), two.getSpeeds())) < 0;
@@ -440,13 +490,29 @@ public abstract class Flying {
 
 
 	/**
-	 * Calculates the time to collision of 2 ships, or returns infinity if they will not collide.
-	 * TODO: works, praying unnecesary now
-	 * TODO: recomment
+	 * Calculates the time to collision of 2 flying objects, or returns infinity if they will not collide.
 	 * @param flying
-	 * @return The point where the two ships touch each other when (and if) they collide
-	 * 			| ...
+	 * @return Positive infinity if they will not hit, time to collision if they do
+	 * 			| if((double d = ((((this.getXSpeed() - flying.getXSpeed()) * (this.getXCoordinate() 
+	 * 			| - flying.getXCoordinate()) + (this.getYSpeed() - flying.getYSpeed()) * (this.getYCoordinate() 
+	 * 			| - flying.getYCoordinate())) * ((this.getXSpeed() - flying.getXSpeed()) * (this.getXCoordinate() 
+	 * 			| - flying.getXCoordinate()) + (this.getYSpeed() - flying.getYSpeed()) * (this.getYCoordinate() - flying.getYCoordinate())))
+	 * 			| - (((this.getXSpeed() - flying.getXSpeed()) * (this.getXSpeed() - flying.getXSpeed()) + (this.getYSpeed() 
+	 * 			| - flying.getYSpeed()) * (this.getYSpeed() - flying.getYSpeed())) * (((this.getXCoordinate() 
+	 * 			| - flying.getXCoordinate()) * (this.getXCoordinate() - flying.getXCoordinate()) + (this.getYCoordinate() 
+	 * 			| - flying.getYCoordinate()) * (this.getYCoordinate() - flying.getYCoordinate())) -	(this.getRadius() + flying.getRadius() * this.getRadius() + flying.getRadius()))))) > 0)
+	 * 			| then result == Double.POSITIVE_INFINITY
+	 * 			| else result == -1*((((this.getXSpeed() - flying.getXSpeed()) * (this.getXCoordinate() - flying.getXCoordinate()) + (this.getYSpeed() - flying.getYSpeed()) * (this.getYCoordinate()
+	 *  		| - flying.getYCoordinate())) + sqrt(((((this.getXSpeed() - flying.getXSpeed()) * (this.getXCoordinate() - flying.getXCoordinate()) + (this.getYSpeed() 
+	 *  		| - flying.getYSpeed()) * (this.getYCoordinate() - flying.getYCoordinate())) * ((this.getXSpeed() - flying.getXSpeed()) * (this.getXCoordinate() 
+	 *  		| - flying.getXCoordinate()) + (this.getYSpeed() - flying.getYSpeed()) * (this.getYCoordinate() - flying.getYCoordinate())))	- (((this.getXSpeed() 
+	 *  		| - flying.getXSpeed()) * (this.getXSpeed() - flying.getXSpeed()) + (this.getYSpeed() - flying.getYSpeed()) * (this.getYSpeed() - flying.getYSpeed())) * (((this.getXCoordinate()
+	 *  		| - flying.getXCoordinate()) * (this.getXCoordinate() - flying.getXCoordinate()) + (this.getYCoordinate() - flying.getYCoordinate()) * (this.getYCoordinate() - flying.getYCoordinate()))
+	 *  		| -	(this.getRadius() + flying.getRadius() * this.getRadius() + flying.getRadius()))))))/(this.getXSpeed() - flying.getXSpeed()) * (this.getXSpeed() - flying.getXSpeed()) + (this.getYSpeed() 
+	 *  		| - flying.getYSpeed()) * (this.getYSpeed() - flying.getYSpeed())))
+
 	 * @throws NullPointerException
+	 * 			| flying == null
 	 */
 	public double getTimeToCollision(Flying flying) throws NullPointerException {
 		if(flying == null) throw new NullPointerException();
@@ -506,10 +572,27 @@ public abstract class Flying {
 	}
 	
 	/**
-	 * TODO: comment!
+	 * Calculates the time to collision between 2 given objects
 	 * @param flying1
 	 * @param flying2
-	 * @return
+	 * @return 
+	 * 			| if((double d = ((((flying1.getXSpeed() - flying2.getXSpeed()) * (flying1.getXCoordinate() 
+	 * 			| - flying2.getXCoordinate()) + (flying1.getYSpeed() - flying2.getYSpeed()) * (flying1.getYCoordinate() 
+	 * 			| - flying2.getYCoordinate())) * ((flying1.getXSpeed() - flying2.getXSpeed()) * (flying1.getXCoordinate() 
+	 * 			| - flying2.getXCoordinate()) + (flying1.getYSpeed() - flying2.getYSpeed()) * (flying1.getYCoordinate() - flying2.getYCoordinate())))
+	 * 			| - (((flying1.getXSpeed() - flying2.getXSpeed()) * (flying1.getXSpeed() - flying2.getXSpeed()) + (flying1.getYSpeed() 
+	 * 			| - flying2.getYSpeed()) * (flying1.getYSpeed() - flying2.getYSpeed())) * (((flying1.getXCoordinate() 
+	 * 			| - flying2.getXCoordinate()) * (flying1.getXCoordinate() - flying2.getXCoordinate()) + (flying1.getYCoordinate() 
+	 * 			| - flying2.getYCoordinate()) * (flying1.getYCoordinate() - flying2.getYCoordinate())) -	(flying1.getRadius() + flying2.getRadius() * flying1.getRadius() + flying2.getRadius()))))) > 0)
+	 * 			| then result == Double.POSITIVE_INFINITY
+	 * 			| else result == -1*((((flying1.getXSpeed() - flying2.getXSpeed()) * (flying1.getXCoordinate() - flying2.getXCoordinate()) + (flying1.getYSpeed() - flying2.getYSpeed()) * (flying1.getYCoordinate()
+	 *  		| - flying2.getYCoordinate())) + sqrt(((((flying1.getXSpeed() - flying2.getXSpeed()) * (flying1.getXCoordinate() - flying2.getXCoordinate()) + (flying1.getYSpeed() 
+	 *  		| - flying2.getYSpeed()) * (flying1.getYCoordinate() - flying2.getYCoordinate())) * ((flying1.getXSpeed() - flying2.getXSpeed()) * (flying1.getXCoordinate() 
+	 *  		| - flying2.getXCoordinate()) + (flying1.getYSpeed() - flying2.getYSpeed()) * (flying1.getYCoordinate() - flying2.getYCoordinate())))	- (((flying1.getXSpeed() 
+	 *  		| - flying2.getXSpeed()) * (flying1.getXSpeed() - flying2.getXSpeed()) + (flying1.getYSpeed() - flying2.getYSpeed()) * (flying1.getYSpeed() - flying2.getYSpeed())) * (((flying1.getXCoordinate()
+	 *  		| - flying2.getXCoordinate()) * (flying1.getXCoordinate() - flying2.getXCoordinate()) + (flying1.getYCoordinate() - flying2.getYCoordinate()) * (flying1.getYCoordinate() - flying2.getYCoordinate()))
+	 *  		| -	(flying1.getRadius() + flying2.getRadius() * flying1.getRadius() + flying2.getRadius()))))))/(flying1.getXSpeed() - flying2.getXSpeed()) * (flying1.getXSpeed() - flying2.getXSpeed()) + (flying1.getYSpeed() 
+	 *  		| - flying2.getYSpeed()) * (flying1.getYSpeed() - flying2.getYSpeed())))
 	 * @throws NullPointerException
 	 */
 	public static double getTimeToCollision(Flying flying1, Flying flying2) throws NullPointerException{
@@ -518,7 +601,7 @@ public abstract class Flying {
 	}
 
 	/**
-	 * 
+	 * TODO: Comment
 	 * @param flying
 	 * @return
 	 * @throws NullPointerException
@@ -564,13 +647,20 @@ public abstract class Flying {
 	@Immutable
 	public abstract double getMass();
 	
+	/**
+	 * Returns the mass of the sperical object
+	 * @return 4/3 * Math.PI * this.getRadius() * this.getRadius() * this.getRadius() *	this.getMassDensity()
+	 */
 	protected double getSphericalMass(){
 		double mass = 4 / 3 * Math.PI *
 				this.getRadius() * this.getRadius() * this.getRadius() *
 				this.getMassDensity();
 		return mass;
 	}
-
+	/**
+	 * Returns true if the flying object does not have a world yet (=null)
+	 * @return this.getWorld() == null
+	 */
 	public boolean isAvailableToAdd() {
 		return this.getWorld() == null;
 	}
@@ -613,6 +703,11 @@ public abstract class Flying {
 	
 	protected abstract void collideWithAsteroid(Asteroid asteroid);
 	
+	/**
+	 * TODO: comment
+	 * @param collisionListener
+	 * @throws NullPointerException
+	 */
 	protected void collideWithBoundary(CollisionListener collisionListener) throws NullPointerException{
 		boolean invertx = false;
 		boolean inverty = false;
@@ -633,6 +728,17 @@ public abstract class Flying {
 	
 	public static double collisions;
 	
+	/**
+	 * Collides 2 flying object
+	 * @param flying1
+	 * @param flying2
+	 * @effect
+	 * 		| collisions ++
+	 * @effect
+	 * 		| flying1.collideWith(flying2)
+	 * @effect
+	 * 		| flying2.collideWith(flying1)
+	 */
 	public static void collide(Flying flying1, Flying flying2){
 		collisions ++;
 		System.out.println("collision " + collisions + " " + flying1.getFlyertype() + " " + flying2.getFlyertype());
@@ -650,6 +756,12 @@ public abstract class Flying {
 		return dead;
 	}
 	
+	/**
+	 * TODO: Comment
+	 * @param flying
+	 * @throws IllegalArgumentException
+	 * @throws NullPointerException
+	 */
 	protected void bounceOf(Flying flying) throws IllegalArgumentException, NullPointerException{
 		if(flying == null) throw new NullPointerException();
 		if(!(flying.getFlyertype() == Flyer.ASTEROID || flying.getFlyertype() == Flyer.SHIP)) throw new IllegalArgumentException();

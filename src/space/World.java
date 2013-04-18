@@ -11,23 +11,51 @@ import ship.*;
 
 
 /**
+ * This is the world in which Flying objects reside. A world is a rectangle with a width and a length. These are positive numbers within the double range.
+ * 
  * 
  * @author Joost Verplancke
  * @version 1.0
- * TODO: comment
+ * @Invar	isValidDimension(this.getHeight());
+ * @Invar	isValidDimension(this.getWidth());
+ * @Invar	All Flying Objects mentioned in a collision in this object are also present in this object
+ * 			| for(collision : collisionsorder U collisions.values())
+ * 				this.contains(collision.getFlying1()) && this.contains(collision.getFlying2())
  */
 public class World {
 
 	public static final double LIGHTSPEED = 300000;
 	
 	
+	/**
+	 * In case of doubt, you can call this constructor which makes a valid World with dimensions that conveniently fit my screen's dimensions.
+	 */
 	public World() {
-		this(1000, 1000);
+		this(1366, 768);
 	}
 	
-	public World(double width, double height){
+	/**
+	 * The constructor for a new World in which you want to play.
+	 * @param width
+	 * @param height
+	 * @throws IllegalArgumentException ...
+	 * 			| !(isValidDimension(width) && isValidDimension(height))
+	 * @post ...
+	 * 			| new.getWidth() == width && new.getHeight() == height
+	 */
+	public World(double width, double height) throws IllegalArgumentException{
+		if(!isValidDimension(width) || !isValidDimension(height)) throw new IllegalArgumentException();
 		this.width = width;
 		this.height = height;
+	}
+	
+	/**
+	 * Checker for the dimensions 
+	 * @param dimension
+	 * @return dimension > 0
+	 */
+	public static boolean isValidDimension(double dimension){
+		return dimension > 0;
 	}
 	
 	@Basic
@@ -46,27 +74,49 @@ public class World {
 	
 	private final double height;
 	
+	/**
+	 * Getter for the copy of the collection of ships in this world. Keep in mind that removing ships from the returned collection does not remove them from this world
+	 * @return new Set<Ship>(this.ships)
+	 */
+	@Basic
 	public Set<Ship> getShips(){
 		return new HashSet<Ship>(ships);
 	}
 	
 	private Set<Ship> ships = new HashSet<Ship>();
 
-
+	/**
+	 * Getter for the copy of the collection of asteroids in this world. Keep in mind that removing asteroids from the returned collection does not remove them from this world
+	 * @return new Set<Asteroid>(this.asteroids)
+	 */
+	@Basic
 	public Set<Asteroid> getAsteroids() {
 		return new HashSet<Asteroid>(asteroids);
 	}
 	
 	private Set<Asteroid> asteroids = new HashSet<Asteroid>();
 
-
+	/**
+	 * Getter for the copy of the collection of bullets in this world. Keep in mind that removing bullets from the returned collection does not remove them from this world
+	 * @return new Set<Bullet>(this.bullets)
+	 */
 	public Set<Bullet> getBullets() {
 		return new HashSet<Bullet>(bullets);
 	}
 	
 	private Set<Bullet> bullets = new HashSet<Bullet>();
 
-
+	/**
+	 * Add a ship to this world, overloaded with add(asteroid).
+	 * @param ship
+	 * @throws IllegalArgumentException ...
+	 * 			| !isValidShipToAdd(ship)
+	 * @post ...
+	 * 			| new.contains(ship)
+	 * @post ...
+	 * 			| ship.getWorld() == this
+	 * @effect	recalibrate(ship)
+	 */
 	public void add(Ship ship) throws IllegalArgumentException {
 		if(!isValidShipToAdd(ship)) throw new IllegalArgumentException();
 		ship.setWorld(this);
@@ -74,6 +124,17 @@ public class World {
 		recalibrate(ship);
 	}
 	
+	/**
+	 * Add a ship to this world, overloaded with add(ship)
+	 * @param asteroid
+	 * @throws IllegalArgumentException ...
+	 * 			| !isValidAsteroidToAdd(asteroid)
+	 * @post ...
+	 * 			| new.contains(asteroid)
+	 * @post ...
+	 * 			| asteroid.getWorld() == this
+	 * @effect recalibrate(asteroid)
+	 */
 	public void add(Asteroid asteroid) throws IllegalArgumentException {
 		if(!isValidAsteroidToAdd(asteroid)) throw new IllegalArgumentException();
 		asteroid.setWorld(this);
@@ -81,14 +142,32 @@ public class World {
 		recalibrate(asteroid);
 	}
 	
+	/**
+	 * Return whether the ship is available to add to this world
+	 * @param ship
+	 * @return ..
+	 * 			| result = (ship != null && ship.isAvailableToAdd())
+	 */
 	public static boolean isValidShipToAdd(Ship ship){
 		return ship != null && ship.isAvailableToAdd();
 	}
 	
+	/**
+	 * Return whether the asteroid is available to add to this world
+	 * @param asteroid
+	 * @return ...
+	 * 			| result = (asteroid != null && asteroid.isAvailableToAdd())
+	 */
 	public static boolean isValidAsteroidToAdd(Flying asteroid){
 		return asteroid != null && asteroid.isAvailableToAdd();
 	}
 
+	/**
+	 * return whether the given Flying is to be found in this world.
+	 * @param flying
+	 * @return ...
+	 * 			| this.contains((Ship) flying) || this.contains((Bullet) flying) || this.contains((Asteroid) flying)
+	 */
 	public boolean contains(Flying flying){
 		boolean contains = false;
 		switch(flying.getFlyertype()){
@@ -100,21 +179,55 @@ public class World {
 		return contains;
 	}
 	
+	/**
+	 * Return whether the given Asteroid is to be found in this world.
+	 * @param asteroid
+	 * @return ...
+	 * 			| result = this.asteroids.contains(asteroid)
+	 */
 	public boolean contains(Asteroid asteroid){
 		return asteroids.contains(asteroid);
 	}
 	
+	/**
+	 * Return whether the given Ship is to be found in this world
+	 * @param ship
+	 * @return ...
+	 * 			| result = this.ships.contains(asteroid)
+	 */
 	public boolean contains(Ship ship){
 		return ships.contains(ship);
 	}
 	
+	/**
+	 * Return whether the given Bullet is to be found in this world.
+	 * @param bullet
+	 * @return ...
+	 * 			| result = this.bullets.contains(bullet)
+	 */
 	public boolean contains(Bullet bullet){
 		return bullets.contains(bullet);
 	}
 	
 
-	public void remove(Asteroid asteroid) {
-		if(!this.asteroids.contains(asteroid)) return;
+	/**
+	 * 
+	 * @param asteroid
+	 * @throws IllegalArgumentException ...
+	 * 			| !this.contains(asteroid)
+	 * @post ...
+	 * 			| !new.contains(asteroid)
+	 * @post ...
+	 * 			| new.collisions.get(asteroid) == null
+	 * @post ...
+	 * 			| (new asteroid).getWorld() == null
+	 * @effect ...
+	 * 			| if(this.collisions.get(asteroid).getFlying1() != asteroid && new.contains(this.collisions.get(asteroid).getFlying1())) recalibrate(this.collisions.get(asteroid).getFlying1())
+	 * @effect ...
+	 * 			| if(this.collisions.get(asteroid).getFlying2() != asteroid && new.contains(this.collisions.get(asteroid).getFlying2())) recalibrate(this.collisions.get(asteroid).getFlying2())
+	 */
+	public void remove(Asteroid asteroid) throws IllegalArgumentException{
+		if(!this.asteroids.contains(asteroid)) throw new IllegalArgumentException();
 		asteroid.setWorld(null);
 		this.asteroids.remove(asteroid);
 		if(!(collisions.get(asteroid) == null)) {
@@ -133,8 +246,24 @@ public class World {
 		}
 	}
 	
-	public void remove(Ship ship){
-		if(!this.ships.contains(ship)) return;
+	/**
+	 * 
+	 * @param asteroid
+	 * @throws IllegalArgumentException ...
+	 * 			| !this.contains(ship)
+	 * @post ...
+	 * 			| !new.contains(ship)
+	 * @post ...
+	 * 			| new.collisions.get(ship) == null
+	 * @post ...
+	 * 			| (new ship).getWorld() == null
+	 * @effect ...
+	 * 			| if(this.collisions.get(ship).getFlying1() != asteroid && new.contains(this.collisions.get(ship).getFlying1())) recalibrate(this.collisions.get(ship).getFlying1())
+	 * @effect ...
+	 * 			| if(this.collisions.get(ship).getFlying2() != asteroid && new.contains(this.collisions.get(ship).getFlying2())) recalibrate(this.collisions.get(ship).getFlying2())
+	 */
+	public void remove(Ship ship) throws IllegalArgumentException{
+		if(!this.ships.contains(ship)) throw new IllegalArgumentException();
 		ship.setWorld(null);
 		this.ships.remove(ship);
 		if(!(collisions.get(ship) == null)) {
@@ -153,6 +282,22 @@ public class World {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param asteroid
+	 * @throws IllegalArgumentException ...
+	 * 			| !this.contains(bullet)
+	 * @post ...
+	 * 			| !new.contains(bullet)
+	 * @post ...
+	 * 			| new.collisions.get(bullet) == null
+	 * @post ...
+	 * 			| (new bullet).getWorld() == null
+	 * @effect ...
+	 * 			| if(this.collisions.get(bullet).getFlying1() != asteroid && new.contains(this.collisions.get(bullet).getFlying1())) recalibrate(this.collisions.get(bullet).getFlying1())
+	 * @effect ...
+	 * 			| if(this.collisions.get(bullet).getFlying2() != asteroid && new.contains(this.collisions.get(bullet).getFlying2())) recalibrate(this.collisions.get(bullet).getFlying2())
+	 */
 	public void remove(Bullet bullet) throws IllegalArgumentException{
 		if(!this.bullets.contains(bullet)) throw new IllegalArgumentException();
 		System.out.println("Bullet " + bullet.toString() + " deleted");
@@ -174,6 +319,20 @@ public class World {
 		}
 	}
 
+	
+	/**
+	 * 
+	 * @param ship
+	 * @param shotbullet
+	 * @throws IllegalArgumentException ...
+	 * 			| !this.contains(ship)
+	 * @post ...
+	 * 			| shotbullet.getWorld() == this
+	 * @post ...
+	 * 			| new.contains(shotbullet)
+	 * @effect ...
+	 * 			| recalibrate(shotbullet)
+	 */
 	public void shoot(Ship ship, Bullet shotbullet) throws IllegalArgumentException {
 		if(!ships.contains(ship)) throw new IllegalArgumentException();
 		shotbullet.setWorld(this);
@@ -182,7 +341,23 @@ public class World {
 		recalibrate(shotbullet);
 	}
 	
-	public void recalibrate(Flying flying){
+
+	/**
+	 * Recalibrate the ship so that its collision is the first important one on the cards for himself.
+	 * @param flying
+	 * @throws IllegalArgumentException ...
+	 * 			| !this.contains(flying)
+	 * @post ...
+	 * 			| for(flyingit : this.ships U this.asteroids U this.bullets) {
+	 * 				flyingit == flying ||
+	 * 				this.collisions.get(flying).getDelay() <= Flying.getTimeToCollision(flying, flyingit) ||
+	 * 				this.collisions.get(flyingit).getDelay() <= Flying.getTimeToCollision(flying, flyingit) }
+	 * @post ...
+	 * 			| this.collisionsorder.contains(this.collisions.get(flying))
+	 * 				
+	 */
+	public void recalibrate(Flying flying) throws IllegalArgumentException{
+		if(!this.contains(flying)) throw new IllegalArgumentException();
 		Collision collision1 = null;
 		double t = -1;
 		double wouldcollidebefore = -1;
@@ -238,7 +413,16 @@ public class World {
 	private SortedSet<Collision> collisionsorder = new ConcurrentSkipListSet<Collision>();
 
 	
-	
+	/**
+	 * 
+	 * @param dt
+	 * @param collisionListener
+	 * @effect ...
+	 * 			| for(collision : this.collisionsorder){
+	 * 				if(collision.getDelay() < dt) handleCollision(collision, collisionListener) }
+	 * @effect ...
+	 * 			| evolvewithoutcollision(dt, true/false)
+	 */
 	public void evolve(double dt, CollisionListener collisionListener) {
 		double dtt = dt;
 		boolean skipcol = false;
@@ -275,12 +459,19 @@ public class World {
 		Flying flying1 = collision.getFlying1();
 		Flying flying2 = collision.getFlying2();
 		System.out.println("collision between " + flying1.toString() + " and " + flying2.toString());
+		listenToCollision(flying1, flying2, collisionListener);
 		Flying.collide(flying1, flying2);
 		collisionsorder.remove(collision);
 		collisions.remove(flying1);
 		collisions.remove(flying2);
 		if(this.contains(flying2))recalibrate(flying2);
 		if(this.contains(flying1))recalibrate(flying1);
+	}
+	
+	private void listenToCollision(Flying flying1, Flying flying2, CollisionListener collisionListener){
+		double[] cp = new double[2];
+		
+		collisionListener.objectCollision(flying1, flying2, cp[0], cp[1]);
 	}
 	
 	private void evolvewithoutcollisions(double dt, CollisionListener collisionListener, boolean thrustingenabled){

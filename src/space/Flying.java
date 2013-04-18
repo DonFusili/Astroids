@@ -5,6 +5,25 @@ import asteroids.*;
 import be.kuleuven.cs.som.annotate.*;
 import extraUtil.*;
 
+
+/**
+ * Flying is the abstract superclass for every spherical object in our game. It provides methods for moving around in a 2D-plane, checking radii and colliding with other
+ * objects that have this as super-class. These methods depend on the class Vector in the package extraUtil for calculations, checking etc.
+ * 
+ * Flying also defines a public inner enum class Flyer that provides flags for identifying the specific subclass. When extending
+ * this class, keep in mind that you have to add a tag for the subclass in Flyer and extend the switch statement in the method collideWith.
+ * 
+ * 
+ * @author Joost Verplancke & Deevid De Meyer
+ * @version 1.2
+ * @Invar Radii are always chosen correctly, if you want to have different checkers for this, override the isValidRadius method
+ * 			| isValidRadius(this.getRadius())
+ * @Invar The coordinate vector is always correctly chosen.
+ * 			| areValidCoordinates(this.getCoordinates())
+ * @Invar The speedvector is always correctly chosen, if you want a different checker, override isValidSpeed()
+ * 			| isValidSpeed(this.getSpeeds.getX(), this.getSpeeds.getY())
+ *
+ */
 public abstract class Flying {
 	
 	protected Flying(double radius, Flyer flyertype) throws IllegalArgumentException{
@@ -14,7 +33,7 @@ public abstract class Flying {
 	protected Flying(double radius, Vector coordinates, Vector speeds, Flyer flyertype) throws IllegalArgumentException{
 		if(!isValidRadius(radius)) throw new IllegalArgumentException();
 		this.radius = radius;
-		this.coordinates = coordinates;
+		setCoordinates(coordinates);
 		this.speeds = speeds;
 		this.flyertype = flyertype;
 	}
@@ -160,6 +179,29 @@ public abstract class Flying {
 	public Vector getCoordinates() {
 		return coordinates;
 	}
+	
+	/**
+	 * Setter for the vector coordinates.
+	 * @param coordinates the new vector of coordinates.
+	 * @throws IllegalArgumentException if the coordinates are not valid.
+	 * 			| !areVadlidCoordinates(coordinates)
+	 * @post	the coordinates are adjusted according to the argument
+	 * 			| new.getCoordinates == coordinates
+	 */
+	public void setCoordinates(Vector coordinates) throws IllegalArgumentException{
+		if(!areValidCoordinates(coordinates)) throw new IllegalArgumentException();
+		this.coordinates = coordinates;
+	}
+	
+	/**
+	 * The checker for a full vector of coordinates.
+	 * @param coordinates
+	 * @return whether the vector is good enough for this class
+	 * 			| isValidCoordinate(coordinates.getX()) && isValidCoordinate(coordinates.getY())
+	 */
+	public static boolean areValidCoordinates(Vector coordinates){
+		return isValidCoordinate(coordinates.getX()) && isValidCoordinate(coordinates.getY());
+	}
 
 	/**
 	 * This method is used to set the horizontal speed appropriately. If the proposed speed is not valid, we do not change the speed.
@@ -233,13 +275,10 @@ public abstract class Flying {
 	 * 			| (new this).getSpeed() == this.getMaxSpeed() && (new this).getXSpeed()/(new this).getYSpeed() == this.getXSpeed()/this.getYSpeed()
 	 * TODO: this is dirty programming due to problems with the checkers for speeds.
 	 */
+	@SuppressWarnings("static-access")
 	public void changeToMaxSpeed() {
 		if(this.getSpeed() == 0) return;
-		double fracture = this.getSpeed() / getMaxSpeed();
-		double oldYS = this.getYSpeed();
-		this.setYSpeed(0);
-		this.setXSpeed(this.getXSpeed() / fracture);
-		speeds = new Vector(this.getXSpeed(), oldYS/fracture);
+		this.setSpeeds(new Vector(this.getAngle(), this.getMaxSpeed(), this.getMaxSpeed()));
 	}
 
 	/**
@@ -308,13 +347,6 @@ public abstract class Flying {
 		if(isValidSpeed(vec.getX(), vec.getY())) this.speeds = vec;
 	}
 	
-	/**
-	 * TODO: comment
-	 * @param vec
-	 */
-	public void setCoordinates(Vector vec){
-		if(isValidCoordinates(vec)) this.coordinates = vec;
-	}
 	
 	/**
 	 * TODO: comment

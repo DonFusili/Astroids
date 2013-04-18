@@ -14,15 +14,8 @@ import extraUtil.*;
  * 
  * @author Deevid De Meyer and Joost Verplancke
  * @Version 2.0
- * @Invar The radius will always be valid, that is: bigger than the LOWERBOUND_RADIUS
- * 			| isValidRadius(this.getRadius())
  * @Invar The LOWERBOUND_RADIUS will always be bigger than zero
  * 			| LOWERBOUND_RADIUS > 0
- * @Invar The coordinates will always be valid
- * 			| isValidCoordinate(this.getXCoordinate()) && isValidCoordinate(this.getYCoordinate())
- * @Invar The total speed will always be lower than or equal to the max allowable speed at that moment
- * 			| this.getSpeed() < this.getMaxSpeed()
- * TODO: Other Change invars for better compatibility
  * TODO: comment constructors
  */
 

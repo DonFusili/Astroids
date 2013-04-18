@@ -1,6 +1,7 @@
 package ship;
 
 import extraUtil.Vector;
+import asteroids.*;
 import be.kuleuven.cs.som.annotate.*;
 import space.*;
 
@@ -76,7 +77,7 @@ public class Bullet extends Flying{
 	private boolean ticked;
 	
 	@Override
-	protected void collideWithBoundary(){
+	protected void collideWithBoundary(CollisionListener collisionListener){
 		boolean invertx = false;
 		boolean inverty = false;
 		double newx = this.getXSpeed();

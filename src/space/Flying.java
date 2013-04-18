@@ -1,6 +1,7 @@
 package space;
 
 import ship.*;
+import asteroids.*;
 import be.kuleuven.cs.som.annotate.*;
 import extraUtil.*;
 
@@ -107,15 +108,16 @@ public abstract class Flying {
 	protected Vector coordinates;
 
 	public double getXCoordinate() {
-		return coordinates.getX();
+		return this.getCoordinates().getX();
 	}
 
 	public double getYCoordinate() {
-	return coordinates.getY();
+		return this.getCoordinates().getY();
 	}
 
 	protected Vector speeds;
 	
+	@Basic
 	public Vector getSpeeds(){
 		return new Vector(speeds.getX(), speeds.getY());
 	}
@@ -135,20 +137,6 @@ public abstract class Flying {
 		coordinates = new Vector(coordinate, coordinates.getY());
 	}
 
-	/**
-	 * 
-	 * @param distance
-	 * @throws IllegalArgumentException when the new coordinate (after displacement) does not qualify as a valid coordinate
-	 * 			e.g. is NaN or exceeds the bounds of the double representation.
-	 * 			| !isValidCoordinate(this.getXCoordinate() + distance)
-	 * @Post Changes the x coordinate by the given value 
-	 * 		@Eff setXCoordinate(this.getXCoordinate() + distance)
-	 */
-	private void relativeXDisplacement(double distance)
-			throws IllegalArgumentException {
-				double newX = this.getXCoordinate() + distance;
-				setXCoordinate(newX);
-			}
 
 	/**
 	 * This method is used to adjust the Y coordinate appropriately
@@ -165,20 +153,6 @@ public abstract class Flying {
 		coordinates = new Vector(coordinates.getX(), coordinate);
 	}
 
-	/**
-	 * 
-	 * @param distance
-	 * @throws IllegalArgumentException when the new coordinate (after displacement) does not qualify as a valid coordinate
-	 * 			e.g. is NaN or exceeds the bounds of the double representation.
-	 * 			| !isValidCoordinate(this.getYCoordinate() + distance)
-	 * @Post Changes the y coordinate by the given value 
-	 * 		@Eff setYCoordinate(this.getYCoordinate() + distance)
-	 */
-	private void relativeYDisplacement(double distance)
-			throws IllegalArgumentException {
-				double newY = this.getYCoordinate() + distance;
-				setYCoordinate(newY);
-			}
 
 	protected double angle;
 
@@ -200,9 +174,8 @@ public abstract class Flying {
 		if(isValidXSpeed(speed)) speeds = new Vector(speed, this.getYSpeed());
 	}
 
-	@Basic
 	public double getXSpeed() {
-		return speeds.getX();
+		return this.getSpeeds().getX();
 	}
 
 	/**
@@ -284,7 +257,9 @@ public abstract class Flying {
 		this.angle = angle;
 	}
 
+	// The mass density of Asteroids
 	public static final double RHO1 = 2.65e12;
+	// The mass density of Bullets
 	public static final double RHO2 = 7.8e12;
 
 	@Basic
@@ -316,10 +291,10 @@ public abstract class Flying {
 	 * 				not a number or when it exceeds the Double.MAX_VALUE
 	 * 			|!(isValidTimeInterval(interval)
 	 */
-	public void move(double interval) throws IllegalArgumentException {
+	public void move(double interval, CollisionListener collisionListener) throws IllegalArgumentException {
 		if(!isValidTimeInterval(interval)) throw new IllegalArgumentException();
 		try{
-			this.collideWithBoundary();
+			this.collideWithBoundary(collisionListener);
 		}
 		catch(NullPointerException e){}
 		this.setCoordinates(Vector.add(this.getCoordinates(), Vector.scalarMult(interval, this.getSpeeds())));
@@ -580,6 +555,14 @@ public abstract class Flying {
 	
 	private final Flyer flyertype;
 	
+	/**
+	 * This enum is used to identify which class a subobject of Flying is. We use this in order to
+	 * avoid the instanceof method. If you want to extend the program by adding new classes (for example different bullets), it is
+	 * advised to follow this structure and also extend the switch statement in collideWith.
+	 * @author Joost Verplancke & Deevid De Meyer
+	 * @version 1.0
+	 *
+	 */
 	public enum Flyer { SHIP, ASTEROID, BULLET }
 	
 	private void collideWith(Flying flying){
@@ -598,16 +581,16 @@ public abstract class Flying {
 	
 	protected abstract void collideWithAsteroid(Asteroid asteroid);
 	
-	protected void collideWithBoundary() throws NullPointerException{
+	protected void collideWithBoundary(CollisionListener collisionListener) throws NullPointerException{
 		boolean invertx = false;
 		boolean inverty = false;
 		double newx = this.getXSpeed();
 		double newy = this.getYSpeed();
 		double radius = this.getRadius();
-		if(newx > 0 &&((this.getXCoordinate() + radius) >= this.getWorld().getWidth())) invertx = true;
-		if(newx < 0 &&((this.getXCoordinate() - radius) <= (-1 * this.getWorld().getWidth()))) invertx = true;
-		if(newy > 0 && ((this.getYCoordinate() + radius) >= this.getWorld().getHeight())) inverty = true;
-		if(newy < 0 && ((this.getYCoordinate() - radius) <= (-1 * this.getWorld().getHeight()))) inverty = true;
+		if(newx > 0 &&((this.getXCoordinate() + radius) >= this.getWorld().getWidth())) { invertx = true; collisionListener.boundaryCollision(this, (this.getXCoordinate() + radius), this.getYCoordinate()); }
+		if(newx < 0 &&((this.getXCoordinate() - radius) <= (-1 * this.getWorld().getWidth()))) { invertx = true; collisionListener.boundaryCollision(this, (this.getXCoordinate() - radius), this.getYCoordinate()); }
+		if(newy > 0 && ((this.getYCoordinate() + radius) >= this.getWorld().getHeight())) { inverty = true; collisionListener.boundaryCollision(this, this.getXCoordinate(), this.getYCoordinate() + radius); }
+		if(newy < 0 && ((this.getYCoordinate() - radius) <= (-1 * this.getWorld().getHeight()))) { inverty = true; collisionListener.boundaryCollision(this, this.getXCoordinate() + radius, this.getYCoordinate() - radius); }
 		if(invertx || inverty){
 			if(invertx) newx = -1 * newx;
 			if(inverty) newy = -1 * newy;

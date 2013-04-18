@@ -162,8 +162,8 @@ public class World {
 			Collision collision = collisions.get(bullet);
 			collisionsorder.remove(collisions.get(collision.getFlying1()));
 			collisionsorder.remove(collisions.get(collision.getFlying2()));
-			collisions.remove(collision.getFlying1());
-			collisions.remove(collision.getFlying2());
+			if(collision == collisions.get(collision.getFlying1())) collisions.remove(collision.getFlying1());
+			if(collision == collisions.get(collision.getFlying2())) collisions.remove(collision.getFlying2());
 			if(collision.getFlying2() != bullet && this.contains(collision.getFlying2())){
 				recalibrate(collision.getFlying2());
 			}
@@ -255,8 +255,8 @@ public class World {
 		while(!(skipcol) && (Util.fuzzyLessThanOrEqualTo(nextcollisiontime, dtt) || Util.fuzzyLessThanOrEqualTo(nextcollisiontime, 0))){
 			// System.out.println("nextcollisiontime " + nextcollisiontime + " dtt " + dtt);
 			collisionToHandle = nextCollision;
-			evolvewithoutcollisions(nextcollisiontime, false);
-			handleCollision(collisionToHandle);
+			evolvewithoutcollisions(nextcollisiontime, collisionListener, false);
+			handleCollision(collisionToHandle, collisionListener);
 			dtt -= nextcollisiontime;
 			if(!collisionsorder.isEmpty()){
 				nextCollision = collisionsorder.first();
@@ -267,10 +267,10 @@ public class World {
 			}
 		}
 		// if(!collisionsorder.isEmpty()) System.out.println("nextcollisiontimeafterwhile " + collisionsorder.first().getDelay() + " nextline shouldbe: " + (collisionsorder.first().getDelay() - dtt));
-		evolvewithoutcollisions(dtt, true);
+		evolvewithoutcollisions(dtt, collisionListener, true);
 	}
 	
-	private void handleCollision(Collision collision){
+	private void handleCollision(Collision collision, CollisionListener collisionListener){
 		System.out.println("length of bullet set: " + this.bullets.size());
 		Flying flying1 = collision.getFlying1();
 		Flying flying2 = collision.getFlying2();
@@ -283,18 +283,18 @@ public class World {
 		if(this.contains(flying1))recalibrate(flying1);
 	}
 	
-	private void evolvewithoutcollisions(double dt, boolean thrustingenabled){
+	private void evolvewithoutcollisions(double dt, CollisionListener collisionListener, boolean thrustingenabled){
 		double dtt = dt;
 		if(dtt < 0) dtt = 0;
 			for(Ship ship : ships){
-				ship.move(dtt);
+				ship.move(dtt, collisionListener);
 			}
 		for(Asteroid asteroid : asteroids){
-			asteroid.move(dtt);
+			asteroid.move(dtt, collisionListener);
 		}
 		try{
 			for(Bullet bullet : bullets){
-				bullet.move(dtt);
+				bullet.move(dtt, collisionListener);
 			}
 		}
 		catch(ConcurrentModificationException e){}

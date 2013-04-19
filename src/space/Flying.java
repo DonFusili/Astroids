@@ -125,9 +125,10 @@ public abstract class Flying {
 	 * This method is used as the interfacing method for the private method MovingTowardsEachOther
 	 * @param ship1
 	 * @param ship2
-	 * @return We return 
-	 * @throws
-	 * TODO: comment
+	 * @return result = ((ship2.getXCoordinate()- ship1.getXCoordinate()) * (ship2.getXSpeed() - ship1.getXSpeed())) + 
+	 *			((ship2.getYCoordinate() - ship1.getYCoordinate()) * (ship2.getYSpeed() - ship1.getYSpeed())) < 0
+	 * @throws NullPointerException
+	 * 		| one == null 
 	 */
 	public static boolean movingTowardsEachOther(Flying one, Flying two) throws NullPointerException {
 				if(one == null) throw new NullPointerException();
@@ -601,12 +602,15 @@ public abstract class Flying {
 	}
 
 	/**
-	 * TODO: Comment
+	 * Returns the coordinates of the collision point of 2 flying objects
 	 * @param flying
-	 * @return
+	 * @return TODO
 	 * @throws NullPointerException
+	 * 		| flying == null
 	 * @throws IllegalArgumentException
+	 * 		| flying == this
 	 * @throws IllegalStateException
+	 * 		| time == Double.POSITIVE_INFINITY
 	 */
 	public double[] getCollisionPosition(Flying flying)
 			throws NullPointerException, IllegalArgumentException,
@@ -760,7 +764,9 @@ public abstract class Flying {
 	 * TODO: Comment
 	 * @param flying
 	 * @throws IllegalArgumentException
+	 * 		| !(flying.getFlyertype() == Flyer.ASTEROID || flying.getFlyertype() == Flyer.SHIP)
 	 * @throws NullPointerException
+	 * 		| flying == null
 	 */
 	protected void bounceOf(Flying flying) throws IllegalArgumentException, NullPointerException{
 		if(flying == null) throw new NullPointerException();

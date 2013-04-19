@@ -2,7 +2,7 @@ package space;
 
 import java.util.Random;
 
-import be.kuleuven.cs.som.annotate.*;
+import be.kuleuven.cs.som.annotate.Basic;
 
 import ship.Bullet;
 import ship.Ship;
@@ -64,8 +64,7 @@ public class Asteroid extends Flying {
 	 * 		| this.random = random
 	 */
 	public Asteroid(double radius, double xpos, double ypos, double xspeed, double yspeed, Random random){
-		this(radius, xpos, ypos, xspeed, yspeed);
-		this.random = random;
+		this(radius, new Vector(xpos, ypos), new Vector(xspeed, yspeed), random);
 	}
 	
 	/**
@@ -83,7 +82,7 @@ public class Asteroid extends Flying {
 		this.random = random;
 	}
 	
-	private final Random random;
+	private Random random;
 	
 	/**
 	 * Returns the mass of the asteroid

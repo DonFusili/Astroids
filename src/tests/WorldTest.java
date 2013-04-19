@@ -2,18 +2,22 @@ package tests;
 
 import static org.junit.Assert.*;
 
-import org.junit.Before;
 import org.junit.Test;
+
+import space.World;
 
 public class WorldTest {
 
-	@Before
-	public void setUp() throws Exception {
-	}
-
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void testConstructorOK(){
+		World world = new World();
+		assertTrue(world.getHeight() == 768 && world.getWidth() == 1366);
+		world = new World(36, 17);
+		assertTrue(world.getHeight() == 17 && world.getWidth() == 36);
 	}
-
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testConstructorChuckle(){
+		World world = new World(-2, 17);
+	}
 }

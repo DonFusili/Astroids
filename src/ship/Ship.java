@@ -3,28 +3,24 @@ package ship;
 import asteroids.IShip;
 import be.kuleuven.cs.som.annotate.*;
 import java.lang.Math;
-import java.util.HashSet;
-import java.util.Set;
 
 import space.*;
 import extraUtil.*;
 
 
 /**
- * 
+ * Ship is a flying object designed to be controlled by the player. It fires bullets.
  * @author Deevid De Meyer and Joost Verplancke
  * @Version 2.0
  * @Invar The LOWERBOUND_RADIUS will always be bigger than zero
  * 			| LOWERBOUND_RADIUS > 0
- * TODO: comment constructors
+ * 
  */
 
 public class Ship extends Flying implements IShip {
 	
 	// Constructors, all implemented defensively
-	
-	//TODO: comment constructors!
-	
+
 
 	
 	/**
@@ -41,13 +37,10 @@ public class Ship extends Flying implements IShip {
 	 * 			The radius of the ship
 	 * @param angle
 	 * 			The starting angle/orientation of the ship
-	 * @throws IllegalArgumentException
-	 * TODO gewoon @effect this(XPosition, YPosition, XSpeed, YSpeed, radius, angle, null, mass) ?
-	 * 			|We throw an exception if either the radius, one of the coordinates, one of the speed
-	 * 				components, the angle or the mass does not satisfy our conditions, e.g. the radius has to be a defined double
-	 * 				bigger than the lower bound of the radius
+	 * @effect We call a higher constructor with these parameters.
+	 * 			| this(XPosition, YPosition, XSpeed, YSpeed, radius, angle, null, mass)
 	 */
-	public Ship(double XPosition, double YPosition, double XSpeed, double YSpeed, double radius, double angle, double mass) throws IllegalArgumentException{
+	public Ship(double XPosition, double YPosition, double XSpeed, double YSpeed, double radius, double angle, double mass){
 		this(XPosition, YPosition, XSpeed, YSpeed, radius, angle, null, mass);
 	}
 

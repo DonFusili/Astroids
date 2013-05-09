@@ -455,10 +455,10 @@ public class World {
 	}
 	
 	private void handleCollision(Collision collision, CollisionListener collisionListener){
-		System.out.println("length of bullet set: " + this.bullets.size());
+		//System.out.println("length of bullet set: " + this.bullets.size());
 		Flying flying1 = collision.getFlying1();
 		Flying flying2 = collision.getFlying2();
-		System.out.println("collision between " + flying1.toString() + " and " + flying2.toString());
+		//System.out.println("collision between " + flying1.toString() + " and " + flying2.toString());
 		listenToCollision(flying1, flying2, collisionListener);
 		Flying.collide(flying1, flying2);
 		collisionsorder.remove(collision);
@@ -469,9 +469,14 @@ public class World {
 	}
 	
 	private void listenToCollision(Flying flying1, Flying flying2, CollisionListener collisionListener){
-		double[] cp = new double[2];
-		
-		collisionListener.objectCollision(flying1, flying2, cp[0], cp[1]);
+		double foy = flying1.getYCoordinate();
+		double fty = flying2.getYCoordinate();
+		double fox = flying1.getXCoordinate();
+		double ftx = flying2.getXCoordinate();
+		double thales = (flying1.getRadius()) / (flying1.getRadius() + flying2.getRadius());
+		double cpo = fox + thales * (ftx - fox);
+		double cpt = foy + thales * (fty - foy);
+		collisionListener.objectCollision(flying1, flying2, cpo, cpt);
 	}
 	
 	private void evolvewithoutcollisions(double dt, CollisionListener collisionListener, boolean thrustingenabled){

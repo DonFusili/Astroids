@@ -3,11 +3,16 @@ package ship;
 import extraUtil.Vector;
 import be.kuleuven.cs.som.annotate.*;
 import space.*;
+import asteroids.*;
 
 /**
- * comment!
+ * Bullets kill things.
  * @version 1.0
  * @author Joost Verplancke
+ * @Invar ...
+ * 			| this.getFlyertype() == Flyer.BULLET
+ * @Invar ...
+ * 			| !(this.getShooter() == null)
  *
  */
 public class Bullet extends Flying{
@@ -38,19 +43,10 @@ public class Bullet extends Flying{
 		return RHO2;
 	}
 
-	/**
-	 * Adds the bullet to the world
-	 * @param world
-	 * 			Defines which world the bullet is added to
-	 * @post this.getWorld() == world
-	 * @throws IllegalStateException
-	 * 			The bullet is already assigned to a world
-	 * 		| !this.isAvailableToAdd()
-	 */
+
 	@Override
 	public void addToWorld(World world) {
-		if(! this.isAvailableToAdd()) throw new IllegalStateException();
-		world.add(this);
+		//never called in bullet, ships are responsible for that
 		
 	}
 
@@ -105,7 +101,7 @@ public class Bullet extends Flying{
 	}
 
 	/**
-	 * Terminates the bullet by removing it from the world
+	 * Terminates the bullet by removing it from the world, thus removing all the links and preparing it for the GarbageCollector.
 	 * @effect this.getWorld().remove(this)
 	 */
 	@Override
@@ -138,16 +134,16 @@ public class Bullet extends Flying{
 	 */
 	
 	@Override
-	protected void collideWithBoundary(){
+	protected void collideWithBoundary(CollisionListener collisionListener){
 		boolean invertx = false;
 		boolean inverty = false;
 		double newx = this.getXSpeed();
 		double newy = this.getYSpeed();
 		double radius = this.getRadius();
-		if(newx > 0 &&((this.getXCoordinate() + radius) >= this.getWorld().getWidth())) invertx = true;
-		if(newx < 0 &&((this.getXCoordinate() - radius) <= (-1 * this.getWorld().getWidth()))) invertx = true;
-		if(newy > 0 && ((this.getYCoordinate() + radius) >= this.getWorld().getHeight())) inverty = true;
-		if(newy < 0 && ((this.getYCoordinate() - radius) <= (-1 * this.getWorld().getHeight()))) inverty = true;
+		if(newx > 0 &&((this.getXCoordinate() + radius) >= this.getWorld().getWidth())) { invertx = true; collisionListener.boundaryCollision(this, (this.getXCoordinate() + radius), this.getYCoordinate()); }
+		if(newx < 0 &&((this.getXCoordinate() - radius) <= (-1 * this.getWorld().getWidth()))) { invertx = true; collisionListener.boundaryCollision(this, (this.getXCoordinate() - radius), this.getYCoordinate()); }
+		if(newy > 0 && ((this.getYCoordinate() + radius) >= this.getWorld().getHeight())) { inverty = true; collisionListener.boundaryCollision(this, this.getXCoordinate(), this.getYCoordinate() + radius); }
+		if(newy < 0 && ((this.getYCoordinate() - radius) <= (-1 * this.getWorld().getHeight()))) { inverty = true; collisionListener.boundaryCollision(this, this.getXCoordinate() + radius, this.getYCoordinate() - radius); }
 		if(invertx || inverty){
 			if(ticked) {die(); return;}
 			ticked = true;

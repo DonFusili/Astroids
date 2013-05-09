@@ -27,22 +27,31 @@ import extraUtil.*;
 public abstract class Flying {
 	
 	/**
-	 * TODO: Comment
+	 * A basic constructor that places a flying object of given radius and flyertype at the origin of the 2D plane
 	 * @param radius
 	 * @param flyertype
-	 * @throws IllegalArgumentException
+	 * @effect this(radius, new Vector(0, 0), new Vector(0, 0), flyertype)
 	 */
-	protected Flying(double radius, Flyer flyertype) throws IllegalArgumentException{
+	protected Flying(double radius, Flyer flyertype){
 		this(radius, new Vector(0, 0), new Vector(0, 0), flyertype);
 	}
 	
 	/**
-	 * TODO: Comment
+	 * The main constructor for a fying object. Initializes all variables. Requires Vectors (as defined in the extraUtil package) as params.
 	 * @param radius
 	 * @param coordinates
 	 * @param speeds
 	 * @param flyertype
-	 * @throws IllegalArgumentException
+	 * @throws IllegalArgumentException ...
+	 * 			| !isValidRadius(radius)
+	 * @post ...
+	 * 			| new.getRadius() == radius
+	 * @post ...
+	 * 			| new.getCoordinates() == coordinates
+	 * @post ...
+	 * 			| new.getSpeeds() == speeds
+	 * @post ...
+	 * 			| new.getFlyerType() == flyertype
 	 */
 	protected Flying(double radius, Vector coordinates, Vector speeds, Flyer flyertype) throws IllegalArgumentException{
 		if(!isValidRadius(radius)) throw new IllegalArgumentException();
@@ -53,16 +62,16 @@ public abstract class Flying {
 	}
 	
 	/**
-	 * TODO: Comment
+	 * The constructor for people that want to give doubles for the coordinates and speeds rather than vectors.
 	 * @param radius
 	 * @param XPos
 	 * @param YPos
 	 * @param XSpeed
 	 * @param YSpeed
 	 * @param flyertype
-	 * @throws IllegalArgumentException
+	 * @effect this(radius, new Vector(XPos, YPos), new Vector(XSpeed, YSpeed), flyertype)
 	 */
-	protected Flying(double radius, double XPos, double YPos, double XSpeed, double YSpeed, Flyer flyertype) throws IllegalArgumentException{
+	protected Flying(double radius, double XPos, double YPos, double XSpeed, double YSpeed, Flyer flyertype){
 		this(radius, new Vector(XPos, YPos), new Vector(XSpeed, YSpeed), flyertype);
 	}
 	
@@ -151,9 +160,9 @@ public abstract class Flying {
 			}
 
 	/**
-	 * TODO does this do anything useful?
+	 * General flying objects can fit into any world.
 	 * @param world
-	 * @return
+	 * @return true
 	 */
 	public static boolean isValidWorld(World world) {
 		return true;
@@ -604,7 +613,7 @@ public abstract class Flying {
 	/**
 	 * Returns the coordinates of the collision point of 2 flying objects
 	 * @param flying
-	 * @return TODO
+	 * @return The coordinates of the point where the two flying objects will hit each other.
 	 * @throws NullPointerException
 	 * 		| flying == null
 	 * @throws IllegalArgumentException
@@ -670,10 +679,7 @@ public abstract class Flying {
 	}
 
 	
-	public void addToWorld(World world) {
-		// TODO Auto-generated method stub
-		
-	}
+	public abstract void addToWorld(World world);
 
 	public Flyer getFlyertype() {
 		return flyertype;
@@ -707,11 +713,7 @@ public abstract class Flying {
 	
 	protected abstract void collideWithAsteroid(Asteroid asteroid);
 	
-	/**
-	 * TODO: comment
-	 * @param collisionListener
-	 * @throws NullPointerException
-	 */
+	
 	protected void collideWithBoundary(CollisionListener collisionListener) throws NullPointerException{
 		boolean invertx = false;
 		boolean inverty = false;
@@ -760,14 +762,7 @@ public abstract class Flying {
 		return dead;
 	}
 	
-	/**
-	 * TODO: Comment
-	 * @param flying
-	 * @throws IllegalArgumentException
-	 * 		| !(flying.getFlyertype() == Flyer.ASTEROID || flying.getFlyertype() == Flyer.SHIP)
-	 * @throws NullPointerException
-	 * 		| flying == null
-	 */
+	
 	protected void bounceOf(Flying flying) throws IllegalArgumentException, NullPointerException{
 		if(flying == null) throw new NullPointerException();
 		if(!(flying.getFlyertype() == Flyer.ASTEROID || flying.getFlyertype() == Flyer.SHIP)) throw new IllegalArgumentException();

@@ -159,6 +159,35 @@ public class ShipTest {
 		assertTrue(shipTester.getDistanceBetween(shipTester) == 0);
 	}
 	
+	@Test
+	public void testSetThrusting(){
+		shipTester.setThrusting(true);
+		assertTrue(shipTester.isThrusterActive());
+		shipTester.setThrusting(false);
+		assertFalse(shipTester.isThrusterActive());		
+		shipTester.toggleThrust();
+		assertTrue(shipTester.isThrusterActive());
+	}
 	
+	@Test
+	public void testThrustingAngleZero(){
+		Ship ship = new Ship(0, 0, 0, 0, 10, 0, 600);
+		ship.thrust(6);
+		assertTrue(Util.fuzzyEquals(ship.getXSpeed(), 6));
+	}
+	
+	@Test
+	public void testThrustingAngleHalfPie(){
+		Ship ship = new Ship(0,0,0,0,10,Math.PI/2,600);
+		ship.thrust(6);
+		assertTrue(Util.fuzzyEquals(ship.getYSpeed(), 6));
+	}
+	
+	@Test
+	public void testTurning(){
+		Ship ship = new Ship(0, 0, 0, 0, 10, 0, 600);
+		ship.turn(0.3);
+		assertTrue(Util.fuzzyEquals(ship.getAngle(), 0.3));
+	}
 
 }

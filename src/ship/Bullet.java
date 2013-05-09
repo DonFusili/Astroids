@@ -1,6 +1,7 @@
 package ship;
 
 import extraUtil.Vector;
+import asteroids.CollisionListener;
 import be.kuleuven.cs.som.annotate.*;
 import space.*;
 
@@ -49,8 +50,6 @@ public class Bullet extends Flying{
 	 */
 	@Override
 	public void addToWorld(World world) {
-		if(! this.isAvailableToAdd()) throw new IllegalStateException();
-		world.add(this);
 		
 	}
 
@@ -138,7 +137,7 @@ public class Bullet extends Flying{
 	 */
 	
 	@Override
-	protected void collideWithBoundary(){
+	protected void collideWithBoundary(CollisionListener collisionListener){
 		boolean invertx = false;
 		boolean inverty = false;
 		double newx = this.getXSpeed();

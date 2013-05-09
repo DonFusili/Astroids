@@ -11,10 +11,11 @@ import extraUtil.*;
 
 
 /**
- * 
+ * Asteroids are spheres flying around that have an awkward way of dying.
  * @version 1.0
  * @author Joost Verplancke
- * TODO: 1 issue remaining
+ * @Invar ...
+ * 			| this.getFlyerType == Flyer.ASTEROID
  */
 public class Asteroid extends Flying {
 
@@ -157,8 +158,22 @@ public class Asteroid extends Flying {
 
 	/**
 	 * Large asteroids are not removed from the game, but are split into two smaller asteroids.
-	 * @effect If the asteroid has a radius bigger than 30 km and there is no random factor, 2 child asteroid are created
-	 * 		TODO geen idee hoe ik moet omgaan met die try/catch stukken
+	 * @effect ...
+	 * 			| coordinates = Vector.add(this.getCoordinates(), new Vector(angle, this.getRadius()/2, this.getRadius()))
+	 * 			  coordinates2 = Vector.add(this.getCoordinates(), new Vector(angle2, this.getRadius()/2, this.getRadius()))
+	 * @effect ...
+	 * 			| angle = this.getRandom().getDouble() * Pi
+	 * 			  speeds = new Vector(angle, speed, World.LIGHTSPEED)
+	 * 			  speeds2 = new Vector(angle + Pi, speed, World.LIGHTSPEED)
+	 * @effect ...
+	 * 			| asteroid1 = new Asteroid(this.getRadius()/2, coordinates, speeds, this.getRandom())
+	 * @effect ...
+	 * 			| asteroid2 = new Asteroid(this.getRadius()/2, coordinates2, speeds2, this.getRandom())
+	 * @effect ...
+	 * 			| if(this.getRadius()>30) this.getWorld().add(asteroid1) && this.getWorld().add(asteroid2)
+	 * @effect ...
+	 * 			| this.die()
+	 * 			
 	 */
 	@Override
 	public void die() {

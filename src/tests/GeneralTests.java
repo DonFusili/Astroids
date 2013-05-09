@@ -8,7 +8,6 @@ import ship.Ship;
 import space.Flying;
 
 public class GeneralTests {
-
 	
 
 }

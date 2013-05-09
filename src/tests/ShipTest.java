@@ -8,7 +8,6 @@ import org.junit.*;
 import extraUtil.Util;
 
 import ship.*;
-import space.Flying;
 
 import asteroids.*;
 
@@ -27,10 +26,6 @@ public class ShipTest {
 	// Static ship methods
 	
 
-	@Test
-	public void testValidAccelerationNAN(){
-		assertFalse(Ship.isValidAcceleration(Double.NaN));
-	}
 	
 	@Test
 	public void testValidAccelerationNegativeAcceleration(){

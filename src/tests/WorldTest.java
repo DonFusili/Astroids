@@ -20,6 +20,7 @@ public class WorldTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructorIllegal(){
+		@SuppressWarnings("unused")
 		World world = new World(-2, 17);
 	}
 	

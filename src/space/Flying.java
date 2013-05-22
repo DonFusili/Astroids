@@ -500,6 +500,7 @@ public abstract class Flying {
 
 
 	/**
+	 * TODO
 	 * Calculates the time to collision of 2 flying objects, or returns infinity if they will not collide.
 	 * @param flying
 	 * @return Positive infinity if they will not hit, time to collision if they do
@@ -507,7 +508,7 @@ public abstract class Flying {
 	 * 			| - flying.getXCoordinate()) + (this.getYSpeed() - flying.getYSpeed()) * (this.getYCoordinate() 
 	 * 			| - flying.getYCoordinate())) * ((this.getXSpeed() - flying.getXSpeed()) * (this.getXCoordinate() 
 	 * 			| - flying.getXCoordinate()) + (this.getYSpeed() - flying.getYSpeed()) * (this.getYCoordinate() - flying.getYCoordinate())))
-	 * 			| - (((this.getXSpeed() - flying.getXSpeed()) * (this.getXSpeed() - flying.getXSpeed()) + (this.getYSpeed() 
+	 * 			| - (((this.getXSpeed() - flying.getXSpeed()) * (this.getXSpeed() - flying.getXSpeed()) + (this.geztYSpeed() 
 	 * 			| - flying.getYSpeed()) * (this.getYSpeed() - flying.getYSpeed())) * (((this.getXCoordinate() 
 	 * 			| - flying.getXCoordinate()) * (this.getXCoordinate() - flying.getXCoordinate()) + (this.getYCoordinate() 
 	 * 			| - flying.getYCoordinate()) * (this.getYCoordinate() - flying.getYCoordinate())) -	(this.getRadius() + flying.getRadius() * this.getRadius() + flying.getRadius()))))) > 0)
@@ -582,6 +583,7 @@ public abstract class Flying {
 	}
 	
 	/**
+	 * TODO
 	 * Calculates the time to collision between 2 given objects
 	 * @param flying1
 	 * @param flying2
